@@ -1,19 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MainApp());
+import 'core/network/supabase_config.dart';
+import 'core/theme/app_theme.dart';
+import 'core/utils/router.dart';
+import 'core/constants/app_constants.dart';
+import 'presentation/auth/viewmodels/auth_viewmodel.dart';
+import 'presentation/home/viewmodels/home_viewmodel.dart';
+import 'presentation/creation/viewmodels/create_event_viewmodel.dart';
+import 'presentation/detail/viewmodels/event_detail_viewmodel.dart';
+import 'presentation/participation/viewmodels/participation_viewmodel.dart';
+import 'presentation/profile/viewmodels/profile_viewmodel.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialiser Supabase
+  await SupabaseConfig.initialize();
+
+  runApp(const BeninImpressionistSync());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+/// Application principale - Benin Impressionist Sync.
+///
+/// Injecte tous les Providers globaux et configure le thème
+/// et le routeur GoRouter.
+class BeninImpressionistSync extends StatelessWidget {
+  const BeninImpressionistSync({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MultiProvider(
+      providers: [
+        // --------------------------- Auth (Membre 2) ---------------------------
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+
+        // --------------------------- Home / Events Feed (Membre 4) ---------------------------
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+
+        // --------------------------- Création d'événement (Membre 3) ---------------------------
+        ChangeNotifierProvider(create: (_) => CreateEventViewModel()),
+
+        // --------------------------- Détails d'événement (Membre 4/5) ---------------------------
+        ChangeNotifierProvider(create: (_) => EventDetailViewModel()),
+
+        // --------------------------- Participation (Membre 5) ---------------------------
+        ChangeNotifierProvider(create: (_) => ParticipationViewModel()),
+
+        // --------------------------- Profil (Membre 1) ---------------------------
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+      ],
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+
+        // --------------------------- Thème Impressionniste Béninois ---------------------------
+        theme: AppTheme.lightTheme,
+
+        // --------------------------- Navigation GoRouter ---------------------------
+        routerConfig: AppRouter.router,
       ),
     );
   }

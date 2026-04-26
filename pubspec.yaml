@@ -1,5 +1,5 @@
 name: benin_impressionist_sync
-description: "A new Flutter project."
+description: "Gestionnaire d'événements synchronisé en temps réel - Benin Impressionist Sync"
 publish_to: 'none'
 version: 0.1.0
 
@@ -9,6 +9,21 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Backend & Auth
+  supabase_flutter: ^2.12.4
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # State Management (MVVM)
+  provider: ^6.1.5
+
+  # Typographie
+  google_fonts: ^6.2.1
+
+  # Internationalisation / Dates
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
