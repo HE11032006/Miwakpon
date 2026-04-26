@@ -78,11 +78,11 @@ Ne creez pas de nouveaux dossiers a la racine de `presentation/` sans en discute
 
 Regles a respecter imperativement :
 
-1. **Ne travaillez jamais directement sur `master`.** Creez toujours une branche.
+1. **Ne travaillez jamais directement sur `main`.** Creez toujours une branche.
 2. Nommez vos branches comme suit : `feat/nom-de-la-feature`, `fix/description-du-bug`, `chore/tache-technique`.
 3. Messages de commit en francais, prefixes par le type : `feat:`, `fix:`, `chore:`, `add:`, etc.
 4. Un commit = une modification logique. Ne commitez pas tout d'un coup.
-5. Mergez sur `master` uniquement quand votre code compile sans erreur (`flutter analyze` doit passer).
+5. Mergez sur `main` uniquement quand votre code compile sans erreur (`flutter analyze` doit passer).
 
 Exemple de workflow :
 
@@ -94,7 +94,7 @@ git commit -m "feat: ajout du formulaire de connexion avec validation email"
 # verifiez que ca compile
 flutter analyze
 # si tout est bon
-git checkout master
+git checkout main
 git merge feat/formulaire-login
 ```
 
