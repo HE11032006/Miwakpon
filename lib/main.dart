@@ -18,15 +18,15 @@ void main() async {
   // Initialiser Supabase
   await SupabaseConfig.initialize();
 
-  runApp(const BeninImpressionistSync());
+  runApp(const Miwakpon());
 }
 
-/// Application principale - Benin Impressionist Sync.
+/// Application principale - Miwakpon.
 ///
 /// Injecte tous les Providers globaux et configure le thème
 /// et le routeur GoRouter.
-class BeninImpressionistSync extends StatelessWidget {
-  const BeninImpressionistSync({super.key});
+class Miwakpon extends StatelessWidget {
+  const Miwakpon({super.key});
 
   @override
   Widget build(BuildContext context) {

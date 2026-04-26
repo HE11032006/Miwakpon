@@ -1,4 +1,4 @@
-package com.example.benin_impressionist_sync
+package com.example.miwakpon
 
 import io.flutter.embedding.android.FlutterActivity
 

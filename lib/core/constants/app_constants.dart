@@ -1,4 +1,4 @@
-/// Constantes globales de l'application Benin Impressionist Sync.
+/// Constantes globales de l'application Miwakpon.
 ///
 /// Ce fichier centralise toutes les constantes utilisées à travers l'app
 /// pour éviter les valeurs "magiques" dispersées dans le code.
@@ -6,7 +6,7 @@ class AppConstants {
   AppConstants._();
 
   // --------------------------- App Info ---------------------------
-  static const String appName = 'Benin Impressionist Sync';
+  static const String appName = 'Miwakpon';
   static const String appVersion = '1.0.0';
 
   // --------------------------- Supabase Tables ---------------------------
