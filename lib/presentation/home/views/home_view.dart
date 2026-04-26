@@ -20,9 +20,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Événements'),
-      ),
+
       body: Center(
         child: Text(
           'Home View - Events Feed\n// TODO: Implémentation par Membre 4',

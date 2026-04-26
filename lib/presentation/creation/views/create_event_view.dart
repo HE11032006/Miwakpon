@@ -17,9 +17,7 @@ class CreateEventView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Créer un événement'),
-      ),
+
       body: Center(
         child: Text(
           'Create Event View\n// TODO: Implémentation par Membre 3',

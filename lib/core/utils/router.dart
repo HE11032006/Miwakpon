@@ -7,6 +7,7 @@ import '../../presentation/home/views/home_view.dart';
 import '../../presentation/creation/views/create_event_view.dart';
 import '../../presentation/detail/views/event_detail_view.dart';
 import '../../presentation/profile/views/profile_view.dart';
+import '../../presentation/widgets/main_layout.dart';
 import '../constants/app_constants.dart';
 
 /// Configuration du routeur GoRouter.
@@ -43,41 +44,56 @@ class AppRouter {
         },
       ),
 
-      // --------------------------- Home / Events Feed (Membre 4) ---------------------------
-      GoRoute(
-        path: AppConstants.homeRoute,
-        name: 'home',
-        builder: (BuildContext context, GoRouterState state) {
-          return const HomeView();
+      // --------------------------- Shell Route (Main Layout) ---------------------------
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainLayout(navigationShell: navigationShell);
         },
-      ),
+        branches: [
+          // Branche 0 : Accueil
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.homeRoute,
+                name: 'home',
+                builder: (context, state) => const HomeView(),
+                routes: [
+                  // Détail de l'événement est un sous-écran de l'accueil
+                  GoRoute(
+                    path: 'detail/:id',
+                    name: 'detail',
+                    builder: (context, state) {
+                      final eventId = state.pathParameters['id']!;
+                      return EventDetailView(eventId: eventId);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          // Branche 1 : Création
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.createEventRoute,
+                name: 'create',
+                builder: (context, state) => const CreateEventView(),
+              ),
+            ],
+          ),
 
-      // --------------------------- Création d'événement (Membre 3) ---------------------------
-      GoRoute(
-        path: AppConstants.createEventRoute,
-        name: 'create',
-        builder: (BuildContext context, GoRouterState state) {
-          return const CreateEventView();
-        },
-      ),
-
-      // --------------------------- Détail d'un événement (Membre 4/5) ---------------------------
-      GoRoute(
-        path: '${AppConstants.eventDetailRoute}/:id',
-        name: 'detail',
-        builder: (BuildContext context, GoRouterState state) {
-          final eventId = state.pathParameters['id']!;
-          return EventDetailView(eventId: eventId);
-        },
-      ),
-
-      // --------------------------- Profil & Settings (Membre 1) ---------------------------
-      GoRoute(
-        path: AppConstants.profileRoute,
-        name: 'profile',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ProfileView();
-        },
+          // Branche 2 : Profil
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.profileRoute,
+                name: 'profile',
+                builder: (context, state) => const ProfileView(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
 
