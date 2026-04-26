@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/network/supabase_config.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // ViewModel pour le profil utilisateur.
 //
@@ -37,7 +38,31 @@ class ProfileViewModel extends ChangeNotifier {
 
   /// Met à jour le profil.
   Future<void> updateProfile({String? displayName, String? avatarUrl}) async {
-    // TODO: Implémentation par Membre 1
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> data = {};
+      if (displayName != null) {
+        data['display_name'] = displayName;
+        _displayName = displayName;
+      }
+      if (avatarUrl != null) {
+        data['avatar_url'] = avatarUrl;
+        _avatarUrl = avatarUrl;
+      }
+
+      if (data.isNotEmpty) {
+        await SupabaseConfig.auth.updateUser(
+          UserAttributes(data: data),
+        );
+      }
+    } catch (e) {
+      debugPrint('Erreur updateProfile: $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   /// Déconnexion.
