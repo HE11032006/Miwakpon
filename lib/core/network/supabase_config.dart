@@ -17,8 +17,8 @@ class SupabaseConfig {
   // Remplacez ces valeurs par vos propres clés Supabase.
   // Idéalement, utilisez un fichier .env non commité.
   // -----------------------------------------------------------
-  static const String _supabaseUrl = 'VOTRE_SUPABASE_URL';
-  static const String _supabaseAnonKey = 'VOTRE_SUPABASE_ANON_KEY';
+  static const String _supabaseUrl = 'https://yewbjnprdiilkywxjuff.supabase.co';
+  static const String _supabaseAnonKey = 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
 
   /// Client Supabase accessible globalement après initialisation.
   static SupabaseClient get client => Supabase.instance.client;
