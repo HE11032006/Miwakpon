@@ -212,7 +212,8 @@ Le Membre 2 est responsable de tout ce qui touche a la connexion et l'inscriptio
 
 Taches :
 - Implementer `login_view.dart` : formulaire avec champs email et mot de passe
-- Completer `auth_viewmodel.dart` : decommentez et adaptez les methodes `signInWithEmail()` et `signUpWithEmail()` (le code est deja esquisse en commentaire)
+- Completer `auth_viewmodel.dart` : décommentez et adaptez les méthodes existantes.
+- **Important** : Ne réinventez pas la roue pour l'authentification ! Utilisez simplement les fonctions natives de Supabase : `SupabaseConfig.auth.signInWithPassword()` et `SupabaseConfig.auth.signUp()`. (Le code est déjà expliqué et fournit en commentaire dans le fichier).
 - Ajouter la validation des champs (email valide, mot de passe >= 6 caracteres)
 - Gerer les messages d'erreur (email deja utilise, mot de passe incorrect, etc.)
 - Apres connexion reussie, naviguer vers `/home` avec `context.go('/home')`
