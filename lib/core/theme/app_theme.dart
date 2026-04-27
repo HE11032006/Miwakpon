@@ -160,6 +160,138 @@ class AppTheme {
     );
   }
 
+  /// Thème sombre "Dusk Shadow" - inspiré des nuits étoilées du Bénin.
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.inversePrimary,
+        primaryContainer: AppColors.primary,
+        onPrimary: AppColors.onSurface,
+        onPrimaryContainer: AppColors.onPrimaryContainer,
+        secondary: AppColors.secondaryContainer,
+        secondaryContainer: AppColors.secondary,
+        onSecondary: AppColors.onSecondaryContainer,
+        onSecondaryContainer: AppColors.onSecondary,
+        tertiary: AppColors.tertiaryContainer,
+        tertiaryContainer: AppColors.tertiary,
+        onTertiary: AppColors.onTertiary,
+        surface: AppColors.inverseSurface,
+        onSurface: AppColors.inverseOnSurface,
+        onSurfaceVariant: AppColors.outlineVariant,
+        error: AppColors.errorContainer,
+        errorContainer: AppColors.error,
+        onError: AppColors.onErrorContainer,
+        onErrorContainer: AppColors.onError,
+        outline: AppColors.outline,
+        outlineVariant: AppColors.onSurfaceVariant,
+        inverseSurface: AppColors.surface,
+        onInverseSurface: AppColors.onSurface,
+        inversePrimary: AppColors.primary,
+      ),
+
+      scaffoldBackgroundColor: AppColors.inverseSurface,
+
+      textTheme: _buildTextTheme().apply(
+        bodyColor: AppColors.inverseOnSurface,
+        displayColor: AppColors.inverseOnSurface,
+      ),
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.inverseSurface,
+        foregroundColor: AppColors.inverseOnSurface,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.newsreader(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: AppColors.inverseOnSurface,
+        ),
+      ),
+
+      cardTheme: CardThemeData(
+        color: const Color(0xFF2C2C2C),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.inversePrimary,
+          foregroundColor: AppColors.onSurface,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: GoogleFonts.beVietnamPro(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.inversePrimary,
+          side: const BorderSide(color: AppColors.outline),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: false,
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.outline),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.inversePrimary, width: 2),
+        ),
+        labelStyle: GoogleFonts.beVietnamPro(
+          color: AppColors.outlineVariant,
+        ),
+        hintStyle: GoogleFonts.beVietnamPro(
+          color: AppColors.outline,
+        ),
+      ),
+
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.inversePrimary.withValues(alpha: 0.10),
+        side: BorderSide(color: AppColors.inversePrimary),
+        labelStyle: GoogleFonts.beVietnamPro(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.05 * 12,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppColors.inverseSurface,
+        selectedItemColor: AppColors.inversePrimary,
+        unselectedItemColor: AppColors.outline,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+      ),
+
+      dividerTheme: const DividerThemeData(
+        color: AppColors.outline,
+        thickness: 1,
+        space: 1,
+      ),
+    );
+  }
+
   /// Typographie suivant le design system Figma Atelier Benin.
   static TextTheme _buildTextTheme() {
     return TextTheme(
