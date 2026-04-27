@@ -34,10 +34,10 @@ class MainLayout extends StatelessWidget {
         backgroundColor: const Color(0xFFFAFAF9),
         elevation: 0,
         centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Center(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
                 'assets/icons/icon.jpg',
@@ -46,17 +46,17 @@ class MainLayout extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(width: 12),
-            Text(
-              AppConstants.appName,
-              style: GoogleFonts.newsreader(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
+          ),
+        ),
+        leadingWidth: 64,
+        title: Text(
+          AppConstants.appName,
+          style: GoogleFonts.newsreader(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           Padding(
