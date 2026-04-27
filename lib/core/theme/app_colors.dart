@@ -45,6 +45,8 @@ class AppColors {
   static const Color errorContainer = Color(0xFFFFDAD6);
   static const Color onError = Color(0xFFFFFFFF);
   static const Color onErrorContainer = Color(0xFF93000A);
+  // --------------------------- Succès ---------------------------
+  static const Color success = Color(0xFF2E7D32);
 
   // --------------------------- Contours ---------------------------
   static const Color outline = Color(0xFF877365);
@@ -60,6 +62,11 @@ class AppColors {
   static const Color bleuLagune = Color(0xFF1A237E);
   static const Color canvasWhite = Color(0xFFF4F1EA);
 
+  // --------------------------- Couleurs de texte ---------------------------
+  static const Color textPrimary = Color(0xFF1A1A1A);
+  static const Color textSecondary = Color(0xFF6B6B6B);
+  static const Color textLight = Color(0xFF9E9E9E);
+
   // --------------------------- OMBRES IMPRESSIONNISTES ---------------------------
   //
   // Ombres très floues (blurRadius > 20) pour simuler la lumière
@@ -67,57 +74,57 @@ class AppColors {
 
   /// Ombre légère - effet "brume matinale"
   static List<BoxShadow> get shadowLight => [
-        BoxShadow(
-          color: primary.withValues(alpha: 0.08),
-          blurRadius: 24,
-          offset: const Offset(0, 4),
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: primary.withValues(alpha: 0.08),
+      blurRadius: 24,
+      offset: const Offset(0, 4),
+      spreadRadius: 0,
+    ),
+  ];
 
   /// Ombre moyenne - effet "lumière d'après-midi"
   static List<BoxShadow> get shadowMedium => [
-        BoxShadow(
-          color: primary.withValues(alpha: 0.12),
-          blurRadius: 32,
-          offset: const Offset(0, 8),
-          spreadRadius: 2,
-        ),
-      ];
+    BoxShadow(
+      color: primary.withValues(alpha: 0.12),
+      blurRadius: 32,
+      offset: const Offset(0, 8),
+      spreadRadius: 2,
+    ),
+  ];
 
   /// Ombre forte - effet "coucher de soleil"
   static List<BoxShadow> get shadowHeavy => [
-        BoxShadow(
-          color: primary.withValues(alpha: 0.16),
-          blurRadius: 48,
-          offset: const Offset(0, 12),
-          spreadRadius: 4,
-        ),
-        BoxShadow(
-          color: secondary.withValues(alpha: 0.06),
-          blurRadius: 24,
-          offset: const Offset(0, 4),
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: primary.withValues(alpha: 0.16),
+      blurRadius: 48,
+      offset: const Offset(0, 12),
+      spreadRadius: 4,
+    ),
+    BoxShadow(
+      color: secondary.withValues(alpha: 0.06),
+      blurRadius: 24,
+      offset: const Offset(0, 4),
+      spreadRadius: 0,
+    ),
+  ];
 
   /// Ombre teintée indigo - pour les cartes événements
   static List<BoxShadow> get shadowIndigo => [
-        BoxShadow(
-          color: secondary.withValues(alpha: 0.10),
-          blurRadius: 28,
-          offset: const Offset(0, 6),
-          spreadRadius: 1,
-        ),
-      ];
+    BoxShadow(
+      color: secondary.withValues(alpha: 0.10),
+      blurRadius: 28,
+      offset: const Offset(0, 6),
+      spreadRadius: 1,
+    ),
+  ];
 
   /// Ombre dorée - pour les éléments interactifs en focus
   static List<BoxShadow> get shadowGolden => [
-        BoxShadow(
-          color: jauneSoleil.withValues(alpha: 0.20),
-          blurRadius: 36,
-          offset: const Offset(0, 8),
-          spreadRadius: 2,
-        ),
-      ];
+    BoxShadow(
+      color: jauneSoleil.withValues(alpha: 0.20),
+      blurRadius: 36,
+      offset: const Offset(0, 8),
+      spreadRadius: 2,
+    ),
+  ];
 }
