@@ -23,26 +23,12 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  final TextEditingController _nameController = TextEditingController();
-  bool _isEditing = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading) {
           return const Center(child: CircularProgressIndicator());
-        }
-
-        // Initialiser le controller si pas en édition
-        if (!_isEditing && viewModel.displayName != null) {
-          _nameController.text = viewModel.displayName!;
         }
 
         return SingleChildScrollView(
@@ -71,76 +57,129 @@ class _ProfileViewState extends State<ProfileView> {
               ),
               const SizedBox(height: 24),
               
-              // Email (lecture seule)
+              // Titre (Nom)
               Text(
-                viewModel.email ?? 'Email inconnu',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                viewModel.displayName ?? 'Adebayo The Artisan',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Bio
+              Text(
+                'Crafting digital landscapes inspired by Beninese heritage. Master of the fluid grid.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 48),
 
-              // Formulaire de nom
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: AppColors.shadowLight,
-                ),
+              // Account Details Card
+              _sectionCard(
+                context,
+                icon: Icons.account_circle,
+                title: 'Account Details',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Informations personnelles',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 24),
-                    TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nom complet',
-                        border: UnderlineInputBorder(),
-                      ),
-                      onChanged: (_) {
-                        if (!_isEditing) setState(() => _isEditing = true);
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    if (_isEditing)
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await viewModel.updateProfile(
-                              displayName: _nameController.text,
-                            );
-                            if (context.mounted) {
-                              setState(() => _isEditing = false);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Profil mis à jour')),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.onPrimary,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: const Text('Sauvegarder les modifications'),
-                        ),
-                      ),
+                    _detailRow(context, 'Email Address', viewModel.email ?? 'adebayo.artisan@alatinsa.co'),
+                    const SizedBox(height: 16),
+                    _detailRow(context, 'Phone Number', '+234 800 123 4567'),
+                    const SizedBox(height: 16),
+                    _detailRow(context, 'Atelier Location', 'Victoria Island, Lagos'),
                   ],
                 ),
               ),
+
+              // Alerts Card
+              _sectionCard(
+                context,
+                icon: Icons.notifications_active,
+                title: 'Alerts',
+                child: const SizedBox.shrink(), // Vide dans la maquette
+              ),
+
+              // Atelier Theme Card
+              _sectionCard(
+                context,
+                icon: Icons.palette,
+                title: 'Atelier Theme',
+                child: Text(
+                  'Select the atmospheric light for your workspace.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
               
-              const SizedBox(height: 48),
-              
-              // NOTE: Le bouton de déconnexion est à la charge du Membre 1
+              const SizedBox(height: 24),
+              // NOTE: Bouton de déconnexion à faire par le Membre 1
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _sectionCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppColors.shadowIndigo,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: AppColors.primary, size: 28),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(BuildContext context, String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: AppColors.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }
