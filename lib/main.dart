@@ -50,15 +50,21 @@ class Miwakpon extends StatelessWidget {
         // --------------------------- Profil (Membre 1) ---------------------------
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
       ],
-      child: MaterialApp.router(
-        title: AppConstants.appName,
-        debugShowCheckedModeBanner: false,
+      child: Consumer<ProfileViewModel>(
+        builder: (context, profileVM, _) {
+          return MaterialApp.router(
+            title: AppConstants.appName,
+            debugShowCheckedModeBanner: false,
 
-        // --------------------------- Thème Impressionniste Béninois ---------------------------
-        theme: AppTheme.lightTheme,
+            // Thème dynamique basé sur le choix de l'utilisateur
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: profileVM.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
-        // --------------------------- Navigation GoRouter ---------------------------
-        routerConfig: AppRouter.router,
+            // Navigation GoRouter
+            routerConfig: AppRouter.router,
+          );
+        },
       ),
     );
   }
