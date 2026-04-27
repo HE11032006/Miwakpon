@@ -46,14 +46,14 @@ class AppTheme {
       ),
 
       // --------------------------- Scaffold ---------------------------
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: AppColors.canvasWhite,
 
       // --------------------------- Typography ---------------------------
       textTheme: _buildTextTheme(),
 
       // --------------------------- AppBar ---------------------------
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface,
+        backgroundColor: const Color(0xFFFAFAF9),
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         centerTitle: true,

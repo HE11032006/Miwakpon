@@ -304,7 +304,7 @@ class ProfileView extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: AppColors.shadowIndigo,
       ),

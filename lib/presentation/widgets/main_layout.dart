@@ -29,9 +29,9 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.canvasWhite,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: const Color(0xFFFAFAF9),
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -73,7 +73,7 @@ class MainLayout extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withValues(alpha: 0.06),
