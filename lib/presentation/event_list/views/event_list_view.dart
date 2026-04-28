@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/event_list_viewmodel.dart';
 
-// --- DESIGN SYSTEM MIS À JOUR ---
 class AppColors {
   static const Color primary = Color(0xFF8C4B00);
   static const Color secondary = Color(0xFF4C56AF);
@@ -29,7 +28,6 @@ class EventListView extends StatelessWidget {
 
           return CustomScrollView(
             slivers: [
-              // EN-TÊTE
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
@@ -37,16 +35,16 @@ class EventListView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Discover Canvas',
+                        'Découvrir les événements',
                         style: GoogleFonts.newsreader(
-                          fontSize: 22, 
-                          fontWeight: FontWeight.w500, 
+                          fontSize: 26, 
+                          fontWeight: FontWeight.w600, 
                           color: AppColors.primary
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Upcoming cultural rhythms and gatherings shaped by the hands of our community.',
+                        'Explorez les rythmes culturels et les rencontres façonnés par notre communauté.',
                         style: GoogleFonts.beVietnamPro(
                           fontSize: 16, 
                           height: 1.4,
@@ -58,25 +56,44 @@ class EventListView extends StatelessWidget {
                 ),
               ),
 
-              // GESTION DES ÉTATS
               if (viewModel.isLoading)
                 const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  hasScrollBody: false,
+                  child: Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  ),
                 )
               else if (events.isEmpty)
-                const SliverFillRemaining(
-                  child: Center(child: Text("No events found.")),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.event_busy, size: 50, color: AppColors.outline),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Pas d'événements pour le moment",
+                          style: GoogleFonts.beVietnamPro(
+                            color: AppColors.outline, 
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 )
-              
-              // LISTE DES CARTES
               else
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final event = events[index];
-                      final colors = [AppColors.cardOrange, AppColors.cardBlue, AppColors.cardPeach];
-                      final cardColor = colors[index % colors.length];
-
+                      final List<Color> colors = [
+                        AppColors.cardOrange, 
+                        AppColors.cardBlue, 
+                        AppColors.cardPeach
+                      ];
+                      final Color cardColor = colors[index % colors.length];
                       return _buildEventCard(context, event, cardColor);
                     },
                     childCount: events.length,
@@ -91,14 +108,16 @@ class EventListView extends StatelessWidget {
     );
   }
 
-  // --- LA CARTE (EXACTEMENT LA MÊME QUE HomeView) ---
   Widget _buildEventCard(BuildContext context, dynamic event, Color bgColor) {
-    final months = ["JAN", "FEV", "MAR", "AVR", "MAI", "JUN", "JUL", "AOU", "SEP", "OCT", "NOV", "DEC"];
-    final monthStr = months[event.dateTime.month - 1];
-    final dayStr = event.dateTime.day.toString().padLeft(2, '0');
+    const List<String> months = [
+      "JAN", "FEV", "MAR", "AVR", "MAI", "JUN",
+      "JUL", "AOU", "SEP", "OCT", "NOV", "DEC"
+    ];
+    final String monthStr = months[event.dateTime.month - 1];
+    final String dayStr = event.dateTime.day.toString().padLeft(2, '0');
 
     return GestureDetector(
-   onTap: () => context.push('/events/detail/${event.id}'),
+      onTap: () => context.push('/events/detail/${event.id}'),
       child: Container(
         height: 240,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -109,16 +128,19 @@ class EventListView extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              right: -20, top: 0, bottom: 0,
+              right: -20,
+              top: 0,
+              bottom: 0,
               child: Container(
                 width: 120,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(200)),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(200),
+                  ),
                 ),
               ),
             ),
-            
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -141,14 +163,13 @@ class EventListView extends StatelessWidget {
                           style: GoogleFonts.beVietnamPro(
                             color: Colors.white, 
                             fontWeight: FontWeight.w500,
-                            fontSize: 13
+                            fontSize: 13,
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
                   Text(
                     event.title,
                     style: GoogleFonts.beVietnamPro(
@@ -158,10 +179,13 @@ class EventListView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined, size: 16, color: Colors.white.withOpacity(0.8)),
+                      Icon(
+                        Icons.location_on_outlined, 
+                        size: 16, 
+                        color: Colors.white.withOpacity(0.8),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         event.location,
