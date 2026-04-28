@@ -5,18 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Layout principal avec AppBar globale et BottomNavigationBar.
-///
-/// Design Figma "Atelier Benin" :
-/// - AppBar : titre "Miwakpon" centré (Newsreader), avatar profil à droite
-/// - Navbar : 3 onglets (Feed, Events, Profile) avec effet de sélection arrondi
 class MainLayout extends StatelessWidget {
   const MainLayout({
     super.key,
     required this.navigationShell,
   });
 
-  /// La Shell de GoRouter qui gère l'état de la navigation par onglets
   final StatefulNavigationShell navigationShell;
 
   void _goBranch(int index) {
@@ -62,7 +56,7 @@ class MainLayout extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
-              onTap: () => _goBranch(2), // Aller vers le profil
+              onTap: () => _goBranch(2), // Profil
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -86,46 +80,58 @@ class MainLayout extends StatelessWidget {
         ],
       ),
       body: navigationShell,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.06),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  context,
-                  index: 0,
-                  icon: Icons.grid_view_outlined,
-                  selectedIcon: Icons.grid_view,
-                  label: 'Fil',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 1,
-                  icon: Icons.calendar_today_outlined,
-                  selectedIcon: Icons.calendar_today,
-                  label: 'Événements',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 2,
-                  icon: Icons.person_outline,
-                  selectedIcon: Icons.person,
-                  label: 'Profil',
-                ),
-              ],
-            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(AppConstants.createEventRoute),
+        backgroundColor: AppColors.primary,
+        elevation: 6,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        color: Colors.white,
+        padding: EdgeInsets.zero,
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _buildNavItem(
+                    context,
+                    index: 0,
+                    icon: Icons.dashboard_outlined,
+                    selectedIcon: Icons.dashboard,
+                    label: 'Dashboard',
+                  ),
+                  const SizedBox(width: 8),
+                  _buildNavItem(
+                    context,
+                    index: 1,
+                    icon: Icons.calendar_today_outlined,
+                    selectedIcon: Icons.calendar_today,
+                    label: 'Événements',
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  // Placeholder pour le bouton central
+                  const SizedBox(width: 48), 
+                  _buildNavItem(
+                    context,
+                    index: 2,
+                    icon: Icons.person_outline,
+                    selectedIcon: Icons.person,
+                    label: 'Profil',
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -147,15 +153,12 @@ class MainLayout extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 20 : 16,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.12)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -166,11 +169,11 @@ class MainLayout extends StatelessWidget {
               color: isSelected ? AppColors.primary : AppColors.outline,
             ),
             if (isSelected) ...[
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Text(
                 label,
                 style: GoogleFonts.beVietnamPro(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.primary,
                 ),

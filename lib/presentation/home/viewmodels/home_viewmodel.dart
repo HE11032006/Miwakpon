@@ -1,25 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
+import '../../../core/network/supabase_config.dart';
 import '../../../data/models/event_model.dart';
 import '../../../data/services/event_service.dart';
-
-// TODO: Implémentation par Membre 4
-// ViewModel pour l'affichage des événements en temps réel.
-//
-// ---------------------------------------------------------------
-// MÉCANIQUE DE DONNÉES TEMPS RÉEL (déjà branchée) :
-//
-// Ce ViewModel s'abonne au Stream<List<EventModel>> de EventService.
-// Chaque fois qu'un événement est créé/modifié/supprimé dans Supabase,
-// le stream émet automatiquement la nouvelle liste.
-//
-// La UI (HomeView) doit utiliser Consumer<HomeViewModel> pour
-// se reconstruire automatiquement à chaque changement.
-//
-// - Pas besoin de bouton "refresh" - tout est en temps réel.
-// ---------------------------------------------------------------
 
 class HomeViewModel extends ChangeNotifier {
   final EventService _eventService = EventService();
@@ -33,12 +16,25 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  /// Événements postés par l'utilisateur actuel
+  List<EventModel> get userEvents {
+    final userId = SupabaseConfig.client.auth.currentUser?.id;
+    if (userId == null) return [];
+    return _events.where((e) => e.organizerId == userId).toList();
+  }
+
+  /// Les derniers événements globaux (excluant potentiellement ceux de l'utilisateur si souhaité, 
+  /// mais ici on prend les plus récents en général)
+  List<EventModel> get latestEvents {
+    final sorted = List<EventModel>.from(_events);
+    sorted.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return sorted.take(5).toList();
+  }
+
   HomeViewModel() {
     _initRealtimeStream();
   }
 
-  /// Initialise la souscription au stream Supabase Realtime.
-  /// Les données arrivent automatiquement - pas de fetch manuel.
   Future<void> _initRealtimeStream() async {
     try {
       await _eventService.subscribe();

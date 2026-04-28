@@ -5,21 +5,13 @@ import '../network/supabase_config.dart';
 import '../../presentation/splash/views/splash_view.dart';
 import '../../presentation/auth/views/login_view.dart';
 import '../../presentation/home/views/home_view.dart';
+import '../../presentation/events/views/events_list_view.dart';
 import '../../presentation/creation/views/create_event_view.dart';
 import '../../presentation/detail/views/event_detail_view.dart';
 import '../../presentation/profile/views/profile_view.dart';
 import '../../presentation/widgets/main_layout.dart';
 import '../constants/app_constants.dart';
 
-/// Configuration du routeur GoRouter.
-///
-/// Routes configurées :
-/// - /         : SplashView
-/// - /login    : LoginView          (Membre 2)
-/// - /home     : HomeView           (Membre 4)
-/// - /create   : CreateEventView    (Membre 3)
-/// - /detail/:id : EventDetailView  (Membre 4/5)
-/// - /profile  : ProfileView        (Membre 1)
 class AppRouter {
   AppRouter._();
 
@@ -36,7 +28,7 @@ class AppRouter {
         },
       ),
 
-      // --------------------------- Authentification (Membre 2) ---------------------------
+      // --------------------------- Authentification ---------------------------
       GoRoute(
         path: AppConstants.loginRoute,
         name: 'login',
@@ -51,7 +43,7 @@ class AppRouter {
           return MainLayout(navigationShell: navigationShell);
         },
         branches: [
-          // Branche 0 : Accueil
+          // Branche 0 : Tableau de Bord
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -59,7 +51,6 @@ class AppRouter {
                 name: 'home',
                 builder: (context, state) => const HomeView(),
                 routes: [
-                  // Détail de l'événement est un sous-écran de l'accueil
                   GoRoute(
                     path: 'detail/:id',
                     name: 'detail',
@@ -73,13 +64,13 @@ class AppRouter {
             ],
           ),
           
-          // Branche 1 : Création
+          // Branche 1 : Liste complète des événements
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppConstants.createEventRoute,
-                name: 'create',
-                builder: (context, state) => const CreateEventView(),
+                path: '/events',
+                name: 'events_list',
+                builder: (context, state) => const EventsListView(),
               ),
             ],
           ),
@@ -96,32 +87,31 @@ class AppRouter {
           ),
         ],
       ),
+
+      // Route de création (hors navigation bar, accessible via FAB)
+      GoRoute(
+        path: AppConstants.createEventRoute,
+        name: 'create',
+        builder: (context, state) => const CreateEventView(),
+      ),
     ],
 
-    // --------------------------- Redirection (gestion auth) ---------------------------
-    // TODO: Ajouter la logique de redirection basée sur l'état
-    // d'authentification Supabase une fois le AuthViewModel prêt.
-
- redirect: (context, state) {
+    redirect: (context, state) {
       final isAuthenticated = SupabaseConfig.isAuthenticated;
       final isLoginRoute = state.matchedLocation == AppConstants.loginRoute;
       final isSplashRoute = state.matchedLocation == AppConstants.splashRoute;
 
-      // Si non authentifié et pas sur login ou splash, rediriger vers login
       if (!isAuthenticated && !isLoginRoute && !isSplashRoute) {
         return AppConstants.loginRoute;
       }
 
-      // Si authentifié et sur login ou splash, rediriger vers home
       if (isAuthenticated && (isLoginRoute || isSplashRoute)) {
         return AppConstants.homeRoute;
       }
 
-      // Sinon, ne pas rediriger
       return null;
     },
 
-    // --------------------------- Page d'erreur ---------------------------
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Text(

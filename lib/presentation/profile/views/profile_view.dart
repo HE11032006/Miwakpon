@@ -54,14 +54,14 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
               ),
-              // Gradient décoratif en haut
+              // Gradient décoratif en haut à droite
               Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 300,
+                top: -100,
+                right: -100,
+                width: 400,
+                height: 400,
                 child: Opacity(
-                  opacity: 0.4,
+                  opacity: 0.35,
                   child: Image.asset(
                     'assets/gradient/Gradient.jpg',
                     fit: BoxFit.cover,
@@ -76,44 +76,48 @@ class ProfileView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 48),
 
                       // ======================== AVATAR ========================
                       Stack(
+                        alignment: Alignment.bottomRight,
                         children: [
                           Container(
+                            padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              boxShadow: AppColors.shadowMedium,
+                              border: Border.all(color: Colors.white, width: 4),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(alpha: 0.15),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 12),
+                                ),
+                              ],
                             ),
                             child: CircleAvatar(
-                              radius: 60,
+                              radius: 64,
                               backgroundColor: AppColors.surfaceContainerHigh,
                               backgroundImage: viewModel.avatarUrl != null
                                   ? NetworkImage(viewModel.avatarUrl!)
                                   : null,
                               child: viewModel.avatarUrl == null
                                   ? const Icon(Icons.person,
-                                      size: 60, color: AppColors.primary)
+                                      size: 64, color: AppColors.primary)
                                   : null,
                             ),
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
-                                boxShadow: AppColors.shadowLight,
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 16,
-                                color: Colors.white,
-                              ),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              size: 18,
+                              color: Colors.white,
                             ),
                           ),
                         ],
