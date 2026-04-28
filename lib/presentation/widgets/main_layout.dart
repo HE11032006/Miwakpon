@@ -101,32 +101,39 @@ class MainLayout extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  context,
-                  index: 0,
-                  icon: Icons.grid_view_outlined,
-                  selectedIcon: Icons.grid_view,
-                  label: 'Fil',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 1,
-                  icon: Icons.calendar_today_outlined,
-                  selectedIcon: Icons.calendar_today,
-                  label: 'Événements',
-                ),
-                _buildNavItem(
-                  context,
-                  index: 2,
-                  icon: Icons.person_outline,
-                  selectedIcon: Icons.person,
-                  label: 'Profil',
-                ),
-              ],
-            ),
-          ),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+       children: [
+    // Utilise Expanded pour que chaque item prenne une place égale sans déborder
+    Expanded(
+      child: _buildNavItem(
+        context,
+        index: 0,
+        icon: Icons.grid_view_outlined,
+        selectedIcon: Icons.grid_view,
+        label: 'Fil',
+      ),
+    ),
+    Expanded(
+      child: _buildNavItem(
+        context,
+        index: 1,
+        icon: Icons.calendar_today_outlined,
+        selectedIcon: Icons.calendar_today,
+        label: 'Événements',
+      ),
+    ),
+    Expanded(
+      child: _buildNavItem(
+        context,
+        index: 2,
+        icon: Icons.person_outline,
+        selectedIcon: Icons.person,
+        label: 'Profil',
+      ),
+    ),
+  ],
+),
+ ),
         ),
       ),
     );
