@@ -34,8 +34,7 @@ class EventModel extends EventEntity {
 
   /// Convertit le modèle en Map pour envoi à Supabase.
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = {
       'title': title,
       'description': description,
       'date_time': dateTime.toIso8601String(),
@@ -45,6 +44,13 @@ class EventModel extends EventEntity {
       'max_participants': maxParticipants,
       'created_at': createdAt.toIso8601String(),
     };
+    
+    // N'inclure l'ID que s'il n'est pas vide (pour les mises à jour)
+    if (id.isNotEmpty) {
+      map['id'] = id;
+    }
+    
+    return map;
   }
 
   /// Crée une copie avec certains champs modifiés.
