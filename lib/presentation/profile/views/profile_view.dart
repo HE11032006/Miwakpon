@@ -29,244 +29,249 @@ class ProfileView extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        return Scaffold(
+          body: Stack(
             children: [
-              const SizedBox(height: 32),
-
-              // ======================== AVATAR ========================
-              Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: AppColors.shadowMedium,
-                    ),
-                    child: CircleAvatar(
-                      radius: 56,
-                      backgroundColor: AppColors.surfaceContainerHigh,
-                      backgroundImage: viewModel.avatarUrl != null
-                          ? NetworkImage(viewModel.avatarUrl!)
-                          : null,
-                      child: viewModel.avatarUrl == null
-                          ? const Icon(Icons.person,
-                              size: 56, color: AppColors.primary)
-                          : null,
-                    ),
-                  ),
-                  // Badge d'édition
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.surface, width: 2),
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        size: 14,
-                        color: AppColors.onPrimary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // ======================== NOM ========================
-              Text(
-                viewModel.displayName ?? 'Artisan Béninois',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onSurface,
-                    ),
-              ),
-              const SizedBox(height: 8),
-
-              // ======================== BIO ========================
-              Text(
-                'Création de paysages numériques inspirés du patrimoine béninois. Maître de la grille fluide.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                      height: 1.5,
-                    ),
-              ),
-              const SizedBox(height: 16),
-
-              // ======================== CHIPS ========================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _chip(context, 'Maître Artisan'),
-                  const SizedBox(width: 8),
-                  _chip(context, 'Atelier Lagos'),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // ======================== DÉTAILS DU COMPTE ========================
-              _sectionCard(
-                context,
-                icon: Icons.account_circle_outlined,
-                title: 'Détails du compte',
-                child: Column(
-                  children: [
-                    _detailRow(
-                      context,
-                      icon: Icons.email_outlined,
-                      label: 'Adresse e-mail',
-                      value: viewModel.email ?? 'Non renseigné',
-                    ),
-                    const Divider(height: 24),
-                    _editableDetailRow(
-                      context,
-                      icon: Icons.phone_outlined,
-                      label: 'Numéro de téléphone',
-                      value: viewModel.phone ?? 'Non renseigné',
-                      onSave: (val) => viewModel.updatePhone(val),
-                    ),
-                    const Divider(height: 24),
-                    _editableDetailRow(
-                      context,
-                      icon: Icons.location_on_outlined,
-                      label: 'Localisation de l\'atelier',
-                      value: viewModel.location ?? 'Non renseigné',
-                      onSave: (val) => viewModel.updateLocation(val),
-                    ),
-                  ],
+              // ======================== BACKGROUNDS ========================
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/gradient/background.jpg',
+                  fit: BoxFit.cover,
                 ),
               ),
-
-              // ======================== ALERTES ========================
-              _sectionCard(
-                context,
-                icon: Icons.notifications_active_outlined,
-                title: 'Alertes',
-                child: Column(
-                  children: [
-                    _alertRow(
-                      context,
-                      title: 'Nouvelles commissions',
-                      subtitle: 'Notifications push et e-mail',
-                      value: viewModel.newCommissions,
-                      onChanged: viewModel.toggleNewCommissions,
-                    ),
-                    const Divider(height: 16),
-                    _alertRow(
-                      context,
-                      title: 'Mises à jour expositions',
-                      subtitle: 'Notifications push et e-mail',
-                      value: viewModel.exhibitionUpdates,
-                      onChanged: viewModel.toggleExhibitionUpdates,
-                    ),
-                    const Divider(height: 16),
-                    _alertRow(
-                      context,
-                      title: 'Alertes sécurité',
-                      subtitle: 'Notifications SMS et e-mail',
-                      value: viewModel.securityAlerts,
-                      onChanged: viewModel.toggleSecurityAlerts,
-                    ),
-                  ],
-                ),
-              ),
-
-              // ======================== THÈME ATELIER ========================
-              _sectionCard(
-                context,
-                icon: Icons.palette_outlined,
-                title: 'Thème Atelier',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Sélectionnez la lumière atmosphérique de votre espace.',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _themeOption(
-                            context,
-                            index: 0,
-                            isSelected: viewModel.selectedTheme == 0,
-                            onTap: () => viewModel.setTheme(0),
-                            gradientColors: [
-                              AppColors.canvasWhite,
-                              AppColors.primary.withValues(alpha: 0.15),
-                              AppColors.secondary.withValues(alpha: 0.1),
-                            ],
-                            label: 'Lumière Aube',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _themeOption(
-                            context,
-                            index: 1,
-                            isSelected: viewModel.selectedTheme == 1,
-                            onTap: () => viewModel.setTheme(1),
-                            gradientColors: [
-                              AppColors.inverseSurface,
-                              AppColors.secondary.withValues(alpha: 0.8),
-                              AppColors.primary.withValues(alpha: 0.4),
-                            ],
-                            label: 'Ombre Crépuscule',
-                          ),
-                        ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.1),
+                        AppColors.background.withValues(alpha: 0.8),
+                        AppColors.background,
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              // Gradient décoratif en haut
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 300,
+                child: Opacity(
+                  opacity: 0.4,
+                  child: Image.asset(
+                    'assets/gradient/Gradient.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
 
-              // ======================== DÉCONNEXION ========================
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    // TODO: Logique à compléter par le Membre 1
-                    await viewModel.signOut();
-                    if (context.mounted) {
-                      context.go(AppConstants.loginRoute);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.logout,
-                    color: AppColors.error,
-                    size: 20,
-                  ),
-                  label: Text(
-                    'Déconnexion',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.error,
+              // ======================== CONTENT ========================
+              SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 32),
+
+                      // ======================== AVATAR ========================
+                      Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: AppColors.shadowMedium,
+                            ),
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundColor: AppColors.surfaceContainerHigh,
+                              backgroundImage: viewModel.avatarUrl != null
+                                  ? NetworkImage(viewModel.avatarUrl!)
+                                  : null,
+                              child: viewModel.avatarUrl == null
+                                  ? const Icon(Icons.person,
+                                      size: 60, color: AppColors.primary)
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 2),
+                                boxShadow: AppColors.shadowLight,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // ======================== NOM & BIO ========================
+                      Text(
+                        viewModel.displayName ?? 'Artisan Béninois',
+                        style: GoogleFonts.newsreader(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.onSurface,
                         ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.error.withValues(alpha: 0.4),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Maître Artisan • Cotonou, Bénin',
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Passionné par l\'artisanat traditionnel et l\'innovation numérique. Créateur d\'expériences uniques.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.beVietnamPro(
+                            fontSize: 14,
+                            color: AppColors.onSurfaceVariant,
+                            height: 1.6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // ======================== CARDS SECTIONS ========================
+                      _sectionCard(
+                        context,
+                        icon: Icons.person_outline,
+                        title: 'Mon Profil',
+                        child: Column(
+                          children: [
+                            _detailRow(
+                              context,
+                              icon: Icons.email_outlined,
+                              label: 'Email',
+                              value: viewModel.email ?? 'Non renseigné',
+                            ),
+                            const _CustomDivider(),
+                            _editableDetailRow(
+                              context,
+                              icon: Icons.phone_outlined,
+                              label: 'Téléphone',
+                              value: viewModel.phone ?? 'Non renseigné',
+                              onSave: (val) => viewModel.updatePhone(val),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      _sectionCard(
+                        context,
+                        icon: Icons.settings_outlined,
+                        title: 'Paramètres',
+                        child: Column(
+                          children: [
+                            _alertRow(
+                              context,
+                              title: 'Notifications',
+                              subtitle: 'Alertes en temps réel',
+                              value: viewModel.newCommissions,
+                              onChanged: viewModel.toggleNewCommissions,
+                            ),
+                            const _CustomDivider(),
+                            _alertRow(
+                              context,
+                              title: 'Mode sombre',
+                              subtitle: 'Lumière Crépuscule',
+                              value: viewModel.selectedTheme == 1,
+                              onChanged: (val) => viewModel.setTheme(val ? 1 : 0),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // ======================== DÉCONNEXION ========================
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: AppColors.shadowLight,
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await viewModel.signOut();
+                            if (context.mounted) {
+                              context.go(AppConstants.loginRoute);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: AppColors.error,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: AppColors.error.withValues(alpha: 0.1),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Se déconnecter',
+                            style: GoogleFonts.beVietnamPro(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 48),
             ],
           ),
         );
+      },
+    );
+  }
+}
+
+class _CustomDivider extends StatelessWidget {
+  const _CustomDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      height: 1,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.outline.withValues(alpha: 0),
+            AppColors.outline.withValues(alpha: 0.1),
+            AppColors.outline.withValues(alpha: 0),
+          ],
+        ),
+      ),
+    );
       },
     );
   }
