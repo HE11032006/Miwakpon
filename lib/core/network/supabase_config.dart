@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -23,15 +24,7 @@ class SupabaseConfig {
   static String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
 
   /// Client Supabase accessible globalement après initialisation.
-  /// Retourne null si non initialisé.
-  static SupabaseClient? get client {
-    try {
-      return Supabase.instance.client;
-    } catch (e) {
-      debugPrint('Supabase n\'est pas encore initialisé ou a échoué: $e');
-      return null;
-    }
-  }
+  static SupabaseClient get client => Supabase.instance.client;
 
   /// Initialise le client Supabase.
   /// Doit être appelé dans main() avant runApp().
@@ -50,21 +43,34 @@ class SupabaseConfig {
       );
     } catch (e) {
       debugPrint('ERREUR lors de Supabase.initialize: $e');
-      // On ne re-throw pas pour éviter de bloquer l'app au démarrage
+      // On ne re-throw pas ici, mais les accès futurs à client pourront échouer
+      // si Supabase.instance n'est pas prêt.
     }
   }
 
   /// Accès rapide à l'instance d'authentification.
-  static GoTrueClient? get auth => client?.auth;
+  static GoTrueClient get auth => client.auth;
 
   /// Accès rapide au canal Realtime.
-  static RealtimeChannel? channel(String name) {
-    return client?.channel(name);
+  static RealtimeChannel channel(String name) {
+    return client.channel(name);
   }
 
   /// Vérifie si un utilisateur est actuellement connecté.
-  static bool get isAuthenticated => auth?.currentUser != null;
+  static bool get isAuthenticated {
+    try {
+      return auth.currentUser != null;
+    } catch (e) {
+      return false;
+    }
+  }
 
   /// Récupère l'utilisateur actuellement connecté, ou null.
-  static User? get currentUser => auth?.currentUser;
+  static User? get currentUser {
+    try {
+      return auth.currentUser;
+    } catch (e) {
+      return null;
+    }
+  }
 }
