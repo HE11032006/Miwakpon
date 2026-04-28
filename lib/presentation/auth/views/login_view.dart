@@ -4,287 +4,265 @@ import '../../../core/theme/app_colors.dart';
 import '../../widgets/common_widgets.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
-/// Écran d'authentification Miwakpon
-///
-/// Design inspiré du mouvement impressionniste béninois :
-/// - Palette ocre et indigo
-/// - Typographie Newsreader pour les titres, Be Vietnam Pro pour les champs
-/// - Champs avec style underline
-/// - Bouton principal avec ombre dorée
+// Écran Figma correspondant : "Authentication"
+//
+// Ce fichier doit contenir le formulaire de connexion/inscription
+// utilisant Supabase Auth (email + password).
+//
+// Le design doit suivre les maquettes Figma "Atelier Benin" :
+// - Input fields avec border-bottom style charcoal
+// - Bouton principal en Ocre avec inner-glow
+// - Typographie Newsreader pour le titre, Be Vietnam Pro pour les champs
+
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Consumer<AuthViewModel>(
-          builder: (context, viewModel, child) {
-            return Stack(
-              children: [
-                // Contenu principal
-                SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 48,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          color: Color(
+            0xFFFAF7F2,
+          ), // Fond crème uniforme (plus propre qu'un dégradé trop marqué)
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              constraints: const BoxConstraints(
+                maxWidth: 400,
+              ), // Empêche l'étirement sur Chrome/Edge
+              margin: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                ],
+              ),
+              child: Consumer<AuthViewModel>(
+                builder: (context, viewModel, child) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Logo / Titre principal
-                      _buildHeader(context, viewModel),
-                      const SizedBox(height: 48),
-                      // Formulaire
-                      _buildForm(context, viewModel),
-                      const SizedBox(height: 24),
-                      // Bouton de soumission
-                      _buildSubmitButton(context, viewModel),
+                      // Branding épuré
+                      const Icon(
+                        Icons.palette_outlined,
+                        color: Color(0xFF8D5B23),
+                        size: 38,
+                      ),
                       const SizedBox(height: 16),
-                      // Lien pour basculer entre connexion/inscription
-                      _buildModeToggle(context, viewModel),
+                      const Text(
+                        'Alatinsa',
+                        style: TextStyle(
+                          fontFamily: 'Newsreader',
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF8D5B23),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        viewModel.isLoginMode
+                            ? 'Enter your artisan workspace'
+                            : 'Create your artisan account',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+
+                      if (viewModel.showSuccessMessage)
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            "Account created! Check your mailbox before logging in.",
+                            style: TextStyle(color: Colors.green, fontSize: 13),
+                          ),
+                        ),
+
+                      // Formulaire
+                      _buildField(
+                        'Email Address',
+                        viewModel.emailController,
+                        'artisan@alatinsa.com',
+                      ),
+                      const SizedBox(height: 30),
+                      _buildField(
+                        'Password',
+                        viewModel.passwordController,
+                        '••••••••',
+                        isPassword: true,
+                      ),
+
+                      if (!viewModel.isLoginMode) ...[
+                        const SizedBox(height: 30),
+                        _buildField(
+                          'Confirm Password',
+                          viewModel.confirmPasswordController,
+                          '••••••••',
+                          isPassword: true,
+                        ),
+                      ],
+
+                      if (viewModel.isLoginMode)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => viewModel.resetPassword(context),
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: Color(0xFF8D5B23),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      const SizedBox(height: 50),
+
+                      if (viewModel.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            viewModel.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+
+                      // Bouton principal (Rectangle simple, sans arrondi excessif)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: viewModel.isLoading
+                              ? null
+                              : () => viewModel.submitForm(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8D5B23),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: viewModel.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  viewModel.isLoginMode
+                                      ? 'Sign In →'
+                                      : 'Create Account →',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // Mode Toggle
+                      GestureDetector(
+                        onTap: viewModel.toggleMode,
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: viewModel.isLoginMode
+                                    ? "New to Alatinsa? "
+                                    : "Already have an account? ",
+                              ),
+                              TextSpan(
+                                text: viewModel.isLoginMode
+                                    ? "Create Account"
+                                    : "Sign In",
+                                style: const TextStyle(
+                                  color: Color(0xFF8D5B23),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
-                  ),
-                ),
-                // Indicateur de chargement
-                if (viewModel.isLoading)
-                  const AppLoadingIndicator(),
-              ],
-            );
-          },
+                  );
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, AuthViewModel viewModel) {
-    return Column(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-            boxShadow: AppColors.shadowLight,
-          ),
-          child: const Icon(
-            Icons.event_available,
-            size: 40,
-            color: AppColors.primary,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Miwakpon',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontFamily: 'Newsreader',
-                color: AppColors.primary,
-              ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          viewModel.isLoginMode
-              ? 'Connectez-vous à votre compte'
-              : 'Créez votre compte',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildForm(BuildContext context, AuthViewModel viewModel) {
+  Widget _buildField(
+    String label,
+    TextEditingController controller,
+    String hint, {
+    bool isPassword = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Champ Email
         Text(
-          'Email',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: viewModel.emailController,
-          keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          enabled: !viewModel.isLoading,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: 'vous@exemple.com',
-            hintStyle: const TextStyle(color: AppColors.textLight),
-            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-          ),
-          onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-        ),
-        const SizedBox(height: 20),
-
-        // Champ Mot de passe
-        Text(
-          'Mot de passe',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: viewModel.passwordController,
-          obscureText: true,
-          textInputAction: viewModel.isLoginMode
-              ? TextInputAction.done
-              : TextInputAction.next,
-          enabled: !viewModel.isLoading,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: '••••••••',
-            hintStyle: const TextStyle(color: AppColors.textLight),
-            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-          ),
-          onFieldSubmitted: (_) {
-            if (viewModel.isLoginMode) {
-              viewModel.submitForm(context);
-            } else {
-              FocusScope.of(context).nextFocus();
-            }
-          },
-        ),
-
-        // Champ Confirmation (uniquement pour l'inscription)
-        if (!viewModel.isLoginMode) ...[
-          const SizedBox(height: 20),
-          Text(
-            'Confirmer le mot de passe',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: viewModel.confirmPasswordController,
-            obscureText: true,
-            textInputAction: TextInputAction.done,
-            enabled: !viewModel.isLoading,
-            style: const TextStyle(color: AppColors.textPrimary),
-            decoration: InputDecoration(
-              hintText: '••••••••',
-              hintStyle: const TextStyle(color: AppColors.textLight),
-              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.primary, width: 2),
-              ),
-            ),
-            onFieldSubmitted: (_) => viewModel.submitForm(context),
-          ),
-        ],
-
-        // Message d'erreur
-        if (viewModel.errorMessage != null) ...[
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.errorContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: AppColors.error,
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    viewModel.errorMessage!,
-                    style: const TextStyle(
-                      color: AppColors.error,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildSubmitButton(BuildContext context, AuthViewModel viewModel) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: AppColors.shadowGolden,
-      ),
-      child: ElevatedButton(
-        onPressed: viewModel.isLoading ? null : () => viewModel.submitForm(context),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.onPrimary,
-          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
-          disabledForegroundColor: AppColors.onPrimary.withValues(alpha: 0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0, // L'ombre est gérée par le Container
-        ),
-        child: Text(
-          viewModel.isLoginMode ? 'SE CONNECTER' : "S'INSCRIRE",
+          label
+              .toUpperCase(), // Les labels en majuscules donnent un aspect plus pro/minimal
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.2,
+            color: Colors.black54,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildModeToggle(BuildContext context, AuthViewModel viewModel) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          viewModel.isLoginMode
-              ? "Pas encore de compte ?"
-              : "Déjà un compte ?",
-          style: TextStyle(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        TextButton(
-          onPressed: viewModel.isLoading ? null : viewModel.toggleMode,
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.primary,
-          ),
-          child: Text(
-            viewModel.isLoginMode ? "S'inscrire" : "Se connecter",
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
+        TextField(
+          controller: controller,
+          obscureText: isPassword,
+          cursorColor: const Color(0xFF8D5B23),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: Colors.grey[300],
+              fontWeight: FontWeight.w300,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFFEEEEEE)),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF8D5B23)),
             ),
           ),
         ),

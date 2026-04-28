@@ -20,7 +20,6 @@ class SupabaseConfig {
 
   static const String _supabaseUrl = 'https://yewbjnprdiilkywxjuff.supabase.co';
   static const String _supabaseAnonKey = 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
-
   /// Client Supabase accessible globalement après initialisation.
   static SupabaseClient get client => Supabase.instance.client;
 
