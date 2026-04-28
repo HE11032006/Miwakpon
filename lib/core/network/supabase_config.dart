@@ -17,6 +17,7 @@ class SupabaseConfig {
   // Remplacez ces valeurs par vos propres clés Supabase.
   // Idéalement, utilisez un fichier .env non commité.
   // -----------------------------------------------------------
+
   static const String _supabaseUrl = 'https://yewbjnprdiilkywxjuff.supabase.co';
   static const String _supabaseAnonKey = 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
 

@@ -354,3 +354,207 @@ Verifiez que vous avez bien remplace `VOTRE_SUPABASE_URL` et `VOTRE_SUPABASE_ANO
 | provider | 6.1.5 | Gestion d'etat MVVM |
 | google_fonts | 6.3.3 | Typographie (Newsreader, Be Vietnam Pro) |
 | intl | 0.20.2 | Formatage de dates |
+
+```
+Miwakpon
+├─ .metadata
+├─ analysis_options.yaml
+├─ android
+│  ├─ app
+│  │  ├─ build.gradle.kts
+│  │  └─ src
+│  │     ├─ debug
+│  │     │  └─ AndroidManifest.xml
+│  │     ├─ main
+│  │     │  ├─ AndroidManifest.xml
+│  │     │  ├─ java
+│  │     │  │  └─ io
+│  │     │  │     └─ flutter
+│  │     │  │        └─ plugins
+│  │     │  │           └─ GeneratedPluginRegistrant.java
+│  │     │  ├─ kotlin
+│  │     │  │  └─ com
+│  │     │  │     └─ example
+│  │     │  │        └─ miwakpon
+│  │     │  │           └─ MainActivity.kt
+│  │     │  └─ res
+│  │     │     ├─ drawable
+│  │     │     │  └─ launch_background.xml
+│  │     │     ├─ drawable-v21
+│  │     │     │  └─ launch_background.xml
+│  │     │     ├─ mipmap-hdpi
+│  │     │     │  ├─ ic_launcher.png
+│  │     │     │  └─ launcher_icon.png
+│  │     │     ├─ mipmap-mdpi
+│  │     │     │  ├─ ic_launcher.png
+│  │     │     │  └─ launcher_icon.png
+│  │     │     ├─ mipmap-xhdpi
+│  │     │     │  ├─ ic_launcher.png
+│  │     │     │  └─ launcher_icon.png
+│  │     │     ├─ mipmap-xxhdpi
+│  │     │     │  ├─ ic_launcher.png
+│  │     │     │  └─ launcher_icon.png
+│  │     │     ├─ mipmap-xxxhdpi
+│  │     │     │  ├─ ic_launcher.png
+│  │     │     │  └─ launcher_icon.png
+│  │     │     ├─ values
+│  │     │     │  └─ styles.xml
+│  │     │     └─ values-night
+│  │     │        └─ styles.xml
+│  │     └─ profile
+│  │        └─ AndroidManifest.xml
+│  ├─ build.gradle.kts
+│  ├─ gradle
+│  │  └─ wrapper
+│  │     └─ gradle-wrapper.properties
+│  ├─ gradle.properties
+│  ├─ local.properties
+│  └─ settings.gradle.kts
+├─ assets
+│  └─ icons
+│     └─ icon.jpg
+├─ ios
+│  ├─ Flutter
+│  │  ├─ AppFrameworkInfo.plist
+│  │  ├─ Debug.xcconfig
+│  │  ├─ ephemeral
+│  │  │  ├─ flutter_lldbinit
+│  │  │  └─ flutter_lldb_helper.py
+│  │  ├─ flutter_export_environment.sh
+│  │  ├─ Generated.xcconfig
+│  │  └─ Release.xcconfig
+│  ├─ Runner
+│  │  ├─ AppDelegate.swift
+│  │  ├─ Assets.xcassets
+│  │  │  ├─ AppIcon.appiconset
+│  │  │  │  ├─ Contents.json
+│  │  │  │  ├─ Icon-App-1024x1024@1x.png
+│  │  │  │  ├─ Icon-App-20x20@1x.png
+│  │  │  │  ├─ Icon-App-20x20@2x.png
+│  │  │  │  ├─ Icon-App-20x20@3x.png
+│  │  │  │  ├─ Icon-App-29x29@1x.png
+│  │  │  │  ├─ Icon-App-29x29@2x.png
+│  │  │  │  ├─ Icon-App-29x29@3x.png
+│  │  │  │  ├─ Icon-App-40x40@1x.png
+│  │  │  │  ├─ Icon-App-40x40@2x.png
+│  │  │  │  ├─ Icon-App-40x40@3x.png
+│  │  │  │  ├─ Icon-App-50x50@1x.png
+│  │  │  │  ├─ Icon-App-50x50@2x.png
+│  │  │  │  ├─ Icon-App-57x57@1x.png
+│  │  │  │  ├─ Icon-App-57x57@2x.png
+│  │  │  │  ├─ Icon-App-60x60@2x.png
+│  │  │  │  ├─ Icon-App-60x60@3x.png
+│  │  │  │  ├─ Icon-App-72x72@1x.png
+│  │  │  │  ├─ Icon-App-72x72@2x.png
+│  │  │  │  ├─ Icon-App-76x76@1x.png
+│  │  │  │  ├─ Icon-App-76x76@2x.png
+│  │  │  │  └─ Icon-App-83.5x83.5@2x.png
+│  │  │  └─ LaunchImage.imageset
+│  │  │     ├─ Contents.json
+│  │  │     ├─ LaunchImage.png
+│  │  │     ├─ LaunchImage@2x.png
+│  │  │     ├─ LaunchImage@3x.png
+│  │  │     └─ README.md
+│  │  ├─ Base.lproj
+│  │  │  ├─ LaunchScreen.storyboard
+│  │  │  └─ Main.storyboard
+│  │  ├─ GeneratedPluginRegistrant.h
+│  │  ├─ GeneratedPluginRegistrant.m
+│  │  ├─ Info.plist
+│  │  └─ Runner-Bridging-Header.h
+│  ├─ Runner.xcodeproj
+│  │  ├─ project.pbxproj
+│  │  ├─ project.xcworkspace
+│  │  │  ├─ contents.xcworkspacedata
+│  │  │  └─ xcshareddata
+│  │  │     ├─ IDEWorkspaceChecks.plist
+│  │  │     └─ WorkspaceSettings.xcsettings
+│  │  └─ xcshareddata
+│  │     └─ xcschemes
+│  │        └─ Runner.xcscheme
+│  ├─ Runner.xcworkspace
+│  │  ├─ contents.xcworkspacedata
+│  │  └─ xcshareddata
+│  │     ├─ IDEWorkspaceChecks.plist
+│  │     └─ WorkspaceSettings.xcsettings
+│  └─ RunnerTests
+│     └─ RunnerTests.swift
+├─ lib
+│  ├─ core
+│  │  ├─ constants
+│  │  │  └─ app_constants.dart
+│  │  ├─ network
+│  │  │  ├─ base_service.dart
+│  │  │  └─ supabase_config.dart
+│  │  ├─ theme
+│  │  │  ├─ app_colors.dart
+│  │  │  └─ app_theme.dart
+│  │  └─ utils
+│  │     └─ router.dart
+│  ├─ data
+│  │  ├─ models
+│  │  │  ├─ event_model.dart
+│  │  │  └─ user_model.dart
+│  │  ├─ repositories_impl
+│  │  │  └─ event_repository_impl.dart
+│  │  └─ services
+│  │     └─ event_service.dart
+│  ├─ domain
+│  │  ├─ entities
+│  │  │  ├─ event_entity.dart
+│  │  │  └─ user_entity.dart
+│  │  └─ repositories_interfaces
+│  │     └─ event_repository.dart
+│  ├─ main.dart
+│  └─ presentation
+│     ├─ auth
+│     │  ├─ viewmodels
+│     │  │  └─ auth_viewmodel.dart
+│     │  └─ views
+│     │     └─ login_view.dart
+│     ├─ creation
+│     │  ├─ viewmodels
+│     │  │  └─ create_event_viewmodel.dart
+│     │  └─ views
+│     │     └─ create_event_view.dart
+│     ├─ detail
+│     │  ├─ viewmodels
+│     │  │  └─ event_detail_viewmodel.dart
+│     │  └─ views
+│     │     └─ event_detail_view.dart
+│     ├─ home
+│     │  ├─ viewmodels
+│     │  │  └─ home_viewmodel.dart
+│     │  └─ views
+│     │     └─ home_view.dart
+│     ├─ participation
+│     │  ├─ viewmodels
+│     │  │  └─ participation_viewmodel.dart
+│     │  └─ views
+│     │     └─ participation_view.dart
+│     ├─ profile
+│     │  ├─ viewmodels
+│     │  │  └─ profile_viewmodel.dart
+│     │  └─ views
+│     │     └─ profile_view.dart
+│     ├─ splash
+│     │  └─ views
+│     │     └─ splash_view.dart
+│     └─ widgets
+│        ├─ common_widgets.dart
+│        └─ main_layout.dart
+├─ pubspec.lock
+├─ pubspec.yaml
+├─ README.md
+├─ SUPABASE_SCHEMA.md
+└─ web
+   ├─ favicon.png
+   ├─ icons
+   │  ├─ Icon-192.png
+   │  ├─ Icon-512.png
+   │  ├─ Icon-maskable-192.png
+   │  └─ Icon-maskable-512.png
+   ├─ index.html
+   └─ manifest.json
+
+```

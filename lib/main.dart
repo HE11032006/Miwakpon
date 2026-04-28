@@ -18,6 +18,13 @@ void main() async {
   // Initialiser Supabase
   await SupabaseConfig.initialize();
 
+  // S'assurer que la session est restaurée
+  final session = SupabaseConfig.auth.currentSession;
+  if (session != null) {
+    // La session est automatiquement restaurée par supabase_flutter
+    debugPrint('Session restaurée pour: ${session.user.email}');
+  }
+
   runApp(const Miwakpon());
 }
 

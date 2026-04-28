@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../network/supabase_config.dart';
 
 import '../../presentation/splash/views/splash_view.dart';
 import '../../presentation/auth/views/login_view.dart';
@@ -100,6 +101,25 @@ class AppRouter {
     // --------------------------- Redirection (gestion auth) ---------------------------
     // TODO: Ajouter la logique de redirection basée sur l'état
     // d'authentification Supabase une fois le AuthViewModel prêt.
+
+ redirect: (context, state) {
+      final isAuthenticated = SupabaseConfig.isAuthenticated;
+      final isLoginRoute = state.matchedLocation == AppConstants.loginRoute;
+      final isSplashRoute = state.matchedLocation == AppConstants.splashRoute;
+
+      // Si non authentifié et pas sur login ou splash, rediriger vers login
+      if (!isAuthenticated && !isLoginRoute && !isSplashRoute) {
+        return AppConstants.loginRoute;
+      }
+
+      // Si authentifié et sur login ou splash, rediriger vers home
+      if (isAuthenticated && (isLoginRoute || isSplashRoute)) {
+        return AppConstants.homeRoute;
+      }
+
+      // Sinon, ne pas rediriger
+      return null;
+    },
 
     // --------------------------- Page d'erreur ---------------------------
     errorBuilder: (context, state) => Scaffold(
