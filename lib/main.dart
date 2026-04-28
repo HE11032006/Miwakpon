@@ -11,6 +11,8 @@ import 'presentation/creation/viewmodels/create_event_viewmodel.dart';
 import 'presentation/detail/viewmodels/event_detail_viewmodel.dart';
 import 'presentation/participation/viewmodels/participation_viewmodel.dart';
 import 'presentation/profile/viewmodels/profile_viewmodel.dart';
+import 'presentation/event_list/viewmodels/event_list_viewmodel.dart';
+import 'data/services/event_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +51,9 @@ class Miwakpon extends StatelessWidget {
 
         // --------------------------- Profil (Membre 1) ---------------------------
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+
+        // --------------------------- Liste des événements (Membre 4) ---------------------------
+      ChangeNotifierProvider(create: (_) => EventListViewModel(EventService())),
       ],
       child: Consumer<ProfileViewModel>(
         builder: (context, profileVM, _) {
