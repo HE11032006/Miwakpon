@@ -16,13 +16,23 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialiser Supabase
-  await SupabaseConfig.initialize();
+  try {
+    debugPrint('Initialisation de Supabase...');
+    await SupabaseConfig.initialize();
+    debugPrint('Supabase initialisé avec succès.');
+  } catch (e, stack) {
+    debugPrint('ERREUR FATALE LORS DE L\'INITIALISATION : $e');
+    debugPrint(stack.toString());
+  }
 
   // S'assurer que la session est restaurée
-  final session = SupabaseConfig.auth.currentSession;
-  if (session != null) {
-    // La session est automatiquement restaurée par supabase_flutter
-    debugPrint('Session restaurée pour: ${session.user.email}');
+  try {
+    final session = SupabaseConfig.auth.currentSession;
+    if (session != null) {
+      debugPrint('Session restaurée pour: ${session.user.email}');
+    }
+  } catch (e) {
+    debugPrint('Erreur lors de la récupération de la session: $e');
   }
 
   runApp(const Miwakpon());

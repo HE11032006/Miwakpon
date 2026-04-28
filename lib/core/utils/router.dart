@@ -24,7 +24,7 @@ class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: AppConstants.profileRoute,
+    initialLocation: AppConstants.splashRoute,
     debugLogDiagnostics: true,
     routes: <RouteBase>[
       // --------------------------- Splash Screen ---------------------------
