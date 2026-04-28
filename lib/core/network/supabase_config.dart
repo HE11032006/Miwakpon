@@ -19,17 +19,21 @@ class SupabaseConfig {
   // Idéalement, utilisez un fichier .env non commité.
   // -----------------------------------------------------------
 
-  static String get _supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://VOTRE-PROJET.supabase.co';
-  static String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'VOTRE_CLÉ_ANON_PUBLIQUE';
+  static String get _supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://yewbjnprdiilkywxjuff.supabase.co';
+  static String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
 
   /// Client Supabase accessible globalement après initialisation.
   static SupabaseClient get client => Supabase.instance.client;
 
   /// Initialise le client Supabase.
   /// Doit être appelé dans main() avant runApp().
-  /// Charge d'abord les variables d'environnement depuis .env
+  /// Tente de charger les variables d'environnement depuis .env si présent.
   static Future<void> initialize() async {
-    await dotenv.load(fileName: ".env");
+    try {
+      await dotenv.load(fileName: ".env");
+    } catch (e) {
+      // Le fichier .env est optionnel, on continue avec les valeurs par défaut
+    }
     
     await Supabase.initialize(
       url: _supabaseUrl,
