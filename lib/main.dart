@@ -25,14 +25,17 @@ void main() async {
     debugPrint(stack.toString());
   }
 
-  // S'assurer que la session est restaurée
+  // S'assurer que la session est restaurée si possible
   try {
-    final session = SupabaseConfig.auth.currentSession;
-    if (session != null) {
-      debugPrint('Session restaurée pour: ${session.user.email}');
+    // On vérifie d'abord si Supabase est initialisé pour éviter le crash de l'assertion
+    if (SupabaseConfig.isAuthenticated) {
+      final session = SupabaseConfig.auth.currentSession;
+      if (session != null) {
+        debugPrint('Session restaurée pour: ${session.user.email}');
+      }
     }
   } catch (e) {
-    debugPrint('Erreur lors de la récupération de la session: $e');
+    debugPrint('Note: Aucune session active ou Supabase non prêt.');
   }
 
   runApp(const Miwakpon());

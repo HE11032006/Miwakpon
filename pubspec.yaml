@@ -41,6 +41,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/gradient/
 
 flutter_launcher_icons:
   android: "launcher_icon"
