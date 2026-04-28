@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Configuration Singleton pour le client Supabase.
 ///
@@ -18,15 +19,18 @@ class SupabaseConfig {
   // Idéalement, utilisez un fichier .env non commité.
   // -----------------------------------------------------------
 
-  static const String _supabaseUrl = 'https://yewbjnprdiilkywxjuff.supabase.co';
-  static const String _supabaseAnonKey = 'sb_publishable_k-3mWVaN9LkGUC5R6Z1FAQ_YICWz0Oq';
+  static String get _supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://VOTRE-PROJET.supabase.co';
+  static String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'VOTRE_CLÉ_ANON_PUBLIQUE';
 
   /// Client Supabase accessible globalement après initialisation.
   static SupabaseClient get client => Supabase.instance.client;
 
   /// Initialise le client Supabase.
   /// Doit être appelé dans main() avant runApp().
+  /// Charge d'abord les variables d'environnement depuis .env
   static Future<void> initialize() async {
+    await dotenv.load(fileName: ".env");
+    
     await Supabase.initialize(
       url: _supabaseUrl,
       anonKey: _supabaseAnonKey,
