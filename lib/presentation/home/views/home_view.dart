@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../widgets/common_widgets.dart';
 import '../viewmodels/home_viewmodel.dart';
 import '../../../data/models/event_model.dart';

@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
@@ -276,9 +277,8 @@ class _CustomDivider extends StatelessWidget {
         ),
       ),
     );
-      },
-    );
   }
+}
 
   // ======================== WIDGETS HELPERS ========================
 
@@ -548,4 +548,3 @@ class _CustomDivider extends StatelessWidget {
       ),
     );
   }
-}
