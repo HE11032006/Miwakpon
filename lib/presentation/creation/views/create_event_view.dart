@@ -26,7 +26,6 @@ class _CreateEventViewState extends State<CreateEventView> {
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
   String? _imageUrl;
-  String _eventType = 'public';
   String _ambiance = 'Terre de Ouidah';
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -408,27 +407,48 @@ class _CreateEventViewState extends State<CreateEventView> {
               ),
               const SizedBox(height: 32),
 
-              // Section Gathering Type
-              Row(
-                children: [
-                  Expanded(
-                    child: _gatheringTypeOption(
-                      title: 'Public Gathering',
-                      icon: Icons.people_outline,
-                      isSelected: _eventType == 'public',
-                      onTap: () => setState(() => _eventType = 'public'),
+              // Section Capacity
+              _sectionHeader('Nombre de Participants'),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _gatheringTypeOption(
-                      title: 'Private Ceremony',
-                      icon: Icons.key_outlined,
-                      isSelected: _eventType == 'private',
-                      onTap: () => setState(() => _eventType = 'private'),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.people_outline, color: AppColors.outline, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _maxParticipantsController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Ex: 50',
+                          hintStyle: GoogleFonts.beVietnamPro(color: AppColors.outline.withValues(alpha: 0.4), fontSize: 14),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        style: GoogleFonts.beVietnamPro(fontSize: 14, color: AppColors.onSurface, fontWeight: FontWeight.w600),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Requis';
+                          final n = int.tryParse(value);
+                          if (n == null || n <= 0) return 'Invalide';
+                          return null;
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 48),
 
@@ -589,54 +609,7 @@ class _CreateEventViewState extends State<CreateEventView> {
     );
   }
 
-  Widget _gatheringTypeOption({
-    required String title,
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFBF4EE) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.black.withValues(alpha: 0.05),
-            width: isSelected ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 28,
-              color: isSelected ? AppColors.primary : AppColors.outline,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   String _getMonthName(int month) {
     const months = [
