@@ -179,16 +179,10 @@ class _CreateEventViewState extends State<CreateEventView> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.canvasWhite,
-              AppColors.canvasWhite.withValues(alpha: 0.8),
-              Colors.white,
-            ],
-            stops: const [0.0, 0.5, 1.0],
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/ambient.png'),
+            fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
