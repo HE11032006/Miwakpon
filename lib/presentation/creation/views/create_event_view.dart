@@ -437,8 +437,9 @@ class _CreateEventViewState extends State<CreateEventView> {
           ),
         ),
       ),
-    );
-  }
+    ),)
+  );
+}
 
   Widget _selectCoverButton({bool isCompact = false}) {
     return InkWell(
