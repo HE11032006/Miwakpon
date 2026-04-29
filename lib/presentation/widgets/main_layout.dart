@@ -28,6 +28,18 @@ class MainLayout extends StatelessWidget {
         backgroundColor: const Color(0xFFFAFAF9),
         elevation: 0,
         centerTitle: true,
+        // Shadow at the bottom of the appbar
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
           child: Center(
@@ -79,66 +91,97 @@ class MainLayout extends StatelessWidget {
           ),
         ],
       ),
-      body: navigationShell,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppConstants.createEventRoute),
-        backgroundColor: AppColors.primary,
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white, size: 30),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        color: Colors.white,
-        padding: EdgeInsets.zero,
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  _buildNavItem(
-                    context,
-                    index: 0,
-                    icon: Icons.dashboard_outlined,
-                    selectedIcon: Icons.dashboard,
-                    label: 'Dashboard',
-                  ),
-                  const SizedBox(width: 8),
-                  _buildNavItem(
-                    context,
-                    index: 1,
-                    icon: Icons.calendar_today_outlined,
-                    selectedIcon: Icons.calendar_today,
-                    label: 'Événements',
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  // Placeholder pour le bouton central
-                  const SizedBox(width: 48), 
-                  _buildNavItem(
-                    context,
-                    index: 2,
-                    icon: Icons.person_outline,
-                    selectedIcon: Icons.person,
-                    label: 'Profil',
-                  ),
-                ],
-              ),
-            ],
+      body: Stack(
+        children: [
+          // 1. Le contenu principal
+          Padding(
+            padding: const EdgeInsets.only(bottom: 90),
+            child: navigationShell,
           ),
-        ),
+          
+          // 2. Le bouton FAB (Placé entre le contenu et la navbar)
+          Positioned(
+            right: (MediaQuery.of(context).size.width / 6) - 28,
+            bottom: 75, // Ancré sur le bord supérieur (90 - 28)
+            child: GestureDetector(
+              onTap: () => context.push(AppConstants.createEventRoute),
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8C4B00),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFFFFB77C).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF8C4B00).withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 28),
+              ),
+            ),
+          ),
+
+          // 3. La Navbar (Placée en dernier pour être au-dessus du bas du bouton)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 90,
+              decoration: const BoxDecoration(
+                color: Color(0xFFFAFAF9),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFFCC7722),
+                    blurRadius: 20,
+                    offset: Offset(0, -4),
+                    spreadRadius: -15, // Ombre très subtile
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                child: Row(
+                  children: [
+                    _navItem(
+                      context,
+                      index: 0,
+                      icon: Icons.grid_view_outlined,
+                      selectedIcon: Icons.grid_view_rounded,
+                      label: 'FEED',
+                    ),
+                    _navItem(
+                      context,
+                      index: 1,
+                      icon: Icons.calendar_today_outlined,
+                      selectedIcon: Icons.calendar_today_rounded,
+                      label: 'EVENTS',
+                    ),
+                    _navItem(
+                      context,
+                      index: 2,
+                      icon: Icons.person_outline,
+                      selectedIcon: Icons.person_rounded,
+                      label: 'PROFILE',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildNavItem(
+  Widget _navItem(
     BuildContext context, {
     required int index,
     required IconData icon,
@@ -147,41 +190,41 @@ class MainLayout extends StatelessWidget {
   }) {
     final isSelected = navigationShell.currentIndex == index;
 
-    return GestureDetector(
-      onTap: () => _goBranch(index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _goBranch(index),
+        behavior: HitTestBehavior.opaque,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFFED7AA).withValues(alpha: 0.4)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+            ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isSelected ? selectedIcon : icon,
-              size: 22,
-              color: isSelected ? AppColors.primary : AppColors.outline,
+              size: 24,
+              color: isSelected ? const Color(0xFF7C2D12) : const Color(0xFFA8A29E),
             ),
-            if (isSelected) ...[
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? const Color(0xFF7C2D12) : const Color(0xFFA8A29E),
+                letterSpacing: 0.5,
               ),
-            ],
+            ),
           ],
         ),
-      ),
-    );
+      ),),
+    ),);
+    
   }
 }

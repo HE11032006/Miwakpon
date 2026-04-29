@@ -59,69 +59,29 @@ class HomeView extends StatelessWidget {
                 ),
               ),
 
-              // ======================== MES ÉVÉNEMENTS ========================
+              // ======================== FEATURED / HORIZONTAL LIST ========================
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Mes Publications',
-                              style: GoogleFonts.newsreader(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            if (userEvents.isNotEmpty)
-                              TextButton(
-                                onPressed: () {}, // Voir tout
-                                child: Text(
-                                  'Voir tout',
-                                  style: GoogleFonts.beVietnamPro(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.outline,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (userEvents.isEmpty)
-                        _buildEmptyState('Vous n\'avez pas encore posté d\'événements.')
-                      else
-                        SizedBox(
-                          height: 220,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: userEvents.length,
-                            itemBuilder: (context, index) {
-                              return _UserEventCard(event: userEvents[index]);
-                            },
-                          ),
-                        ),
-                    ],
+                child: SizedBox(
+                  height: 380,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: userEvents.length,
+                    itemBuilder: (context, index) {
+                      return _UserEventCard(event: userEvents[index]);
+                    },
                   ),
                 ),
               ),
 
-              // ======================== DERNIERS ÉVÉNEMENTS ========================
+              // ======================== LATER THIS MONTH ========================
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
                   child: Text(
-                    'Dernières actualités',
+                    'Later This Month',
                     style: GoogleFonts.newsreader(
-                      fontSize: 22,
+                      fontSize: 24,
                       fontWeight: FontWeight.w600,
                       color: AppColors.onSurface,
                     ),
@@ -137,26 +97,38 @@ class HomeView extends StatelessWidget {
                   ),
                 )
               else
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final event = latestEvents[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Column(
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFE5E2E1)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: List.generate(latestEvents.length, (index) {
+                        final event = latestEvents[index];
+                        final isLast = index == latestEvents.length - 1;
+
+                        return Column(
                           children: [
                             _LatestEventItem(event: event),
-                            if (index < latestEvents.length - 1) 
-                              const Divider(height: 32, thickness: 0.5),
+                            if (!isLast) const _HorizontalDivider(),
                           ],
-                        ),
-                      );
-                    },
-                    childCount: latestEvents.length,
+                        );
+                      }),
+                    ),
                   ),
                 ),
               
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           );
         },
@@ -198,63 +170,86 @@ class _UserEventCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/home/detail/${event.id}'),
       child: Container(
-        width: 280,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
+        width: 320,
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: AppColors.shadowLight,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: event.imageUrl != null
-                    ? Image.network(
-                        event.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-                      )
-                    : _buildPlaceholder(),
-              ),
+          borderRadius: BorderRadius.circular(24),
+          image: DecorationImage(
+            image: event.imageUrl != null
+                ? NetworkImage(event.imageUrl!)
+                : const AssetImage('assets/images/background.jpg') as ImageProvider,
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.3),
+              BlendMode.darken,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.newsreader(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onSurface,
+          ),
+          boxShadow: AppColors.shadowMedium,
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        _badge('EXHIBITION', const Color(0xFFE8E1FF), const Color(0xFF6750A4)),
+                        const SizedBox(width: 8),
+                        _badge('${_getMonthAbbreviation(event.dateTime.month)} ${event.dateTime.day}', const Color(0xFFFFEBD6), const Color(0xFF8C4B00)),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: AppColors.outline),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          event.location,
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 12,
-                            color: AppColors.onSurfaceVariant,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                    const SizedBox(height: 12),
+                    Text(
+                      event.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.newsreader(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF1D1B20),
+                        height: 1.1,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      event.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.beVietnamPro(
+                        fontSize: 14,
+                        color: const Color(0xFF49454F),
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF8C4B00)),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            event.location,
+                            style: GoogleFonts.beVietnamPro(
+                              fontSize: 13,
+                              color: const Color(0xFF49454F),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -263,13 +258,28 @@ class _UserEventCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _badge(String label, Color bgColor, Color textColor) {
     return Container(
-      color: AppColors.surfaceContainerHigh,
-      child: const Center(
-        child: Icon(Icons.image_outlined, size: 32, color: AppColors.outline),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.beVietnamPro(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: textColor,
+          letterSpacing: 0.5,
+        ),
       ),
     );
+  }
+
+  String _getMonthAbbreviation(int month) {
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return months[month - 1];
   }
 }
 
@@ -282,60 +292,103 @@ class _LatestEventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/home/detail/${event.id}'),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(
-                image: event.imageUrl != null
-                    ? NetworkImage(event.imageUrl!)
-                    : const AssetImage('assets/icons/icon.jpg') as ImageProvider,
-                fit: BoxFit.cover,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        color: Colors.transparent, // Pour capturer les taps sur toute la zone
+        child: Row(
+          children: [
+            // Boîte de date
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3EDF7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '${event.dateTime.day}',
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1D1B20),
+                    ),
+                  ),
+                  Text(
+                    _getMonthAbbreviation(event.dateTime.month),
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF49454F),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.title,
-                  style: GoogleFonts.newsreader(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.onSurface,
+            const SizedBox(width: 16),
+            // Infos
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1D1B20),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${event.dateTime.day}/${event.dateTime.month}/${event.dateTime.year}',
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 13,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    event.description,
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 14,
+                      color: const Color(0xFF49454F),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  event.location,
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 13,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right, color: AppColors.outlineVariant),
-        ],
+            const Icon(Icons.chevron_right, color: Color(0xFF49454F)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getMonthAbbreviation(int month) {
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return months[month - 1];
+  }
+}
+
+/// Séparateur horizontal avec dégradé linéaire selon le SVG
+class _HorizontalDivider extends StatelessWidget {
+  const _HorizontalDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0x008C4B00), // Transparent
+            Color(0x4D8C4B00), // 30% d'opacité (0.3 * 255 = 77 -> 4D en hexa)
+            Color(0x008C4B00), // Transparent
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
       ),
     );
   }

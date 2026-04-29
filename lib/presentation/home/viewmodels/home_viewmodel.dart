@@ -16,16 +16,23 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// Événements postés par l'utilisateur actuel
+  /// Événements postés par l'utilisateur actuel (ou simulés pour le design)
   List<EventModel> get userEvents {
     final userId = SupabaseConfig.client.auth.currentUser?.id;
-    if (userId == null) return [];
-    return _events.where((e) => e.organizerId == userId).toList();
+    final userSpecific = _events.where((e) => e.organizerId == userId || e.organizerId == 'mock-user').toList();
+    
+    // Si on n'a vraiment rien (loading terminé mais liste vide), 
+    // on retourne une partie des mock data pour le rendu visuel
+    if (userSpecific.isEmpty && _events.isEmpty) {
+      return _mockEvents.where((e) => e.organizerId == 'mock-user').toList();
+    }
+    return userSpecific;
   }
 
-  /// Les derniers événements globaux (excluant potentiellement ceux de l'utilisateur si souhaité, 
-  /// mais ici on prend les plus récents en général)
+  /// Les derniers événements globaux
   List<EventModel> get latestEvents {
+    if (_events.isEmpty) return _mockEvents;
+    
     final sorted = List<EventModel>.from(_events);
     sorted.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return sorted.take(5).toList();
@@ -35,13 +42,47 @@ class HomeViewModel extends ChangeNotifier {
     _initRealtimeStream();
   }
 
+  static final List<EventModel> _mockEvents = [
+    EventModel(
+      id: 'mock-1',
+      title: 'Atelier Peinture Impressionniste',
+      description: 'Un atelier pour apprendre les techniques de Monet au cœur de Cotonou.',
+      dateTime: DateTime.now().add(const Duration(days: 2)),
+      location: 'Galerie d\'Art, Cotonou',
+      imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5',
+      organizerId: 'mock-user',
+      createdAt: DateTime.now(),
+    ),
+    EventModel(
+      id: 'mock-2',
+      title: 'Exposition Couleurs du Bénin',
+      description: 'Une immersion dans les chefs-d\'œuvre contemporains béninois.',
+      dateTime: DateTime.now().add(const Duration(days: 5)),
+      location: 'Palais des Congrès, Cotonou',
+      imageUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f',
+      organizerId: 'other-user',
+      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+    ),
+    EventModel(
+      id: 'mock-3',
+      title: 'Festival de Sculpture Vive',
+      description: 'Rencontrez les artisans locaux et apprenez la taille sur bois.',
+      dateTime: DateTime.now().add(const Duration(days: 10)),
+      location: 'Porto-Novo',
+      imageUrl: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3',
+      organizerId: 'mock-user',
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
+    ),
+  ];
+
   Future<void> _initRealtimeStream() async {
     try {
-      await _eventService.subscribe();
-
+      // On commence par écouter le flux AVANT de souscrire pour ne rien rater
       _subscription = _eventService.stream.listen(
         (events) {
-          _events = events;
+          // Si on reçoit des données réelles, on les utilise. 
+          // Sinon on garde les mock events pour le rendu visuel.
+          _events = events.isEmpty ? _mockEvents : events;
           _isLoading = false;
           _errorMessage = null;
           notifyListeners();
@@ -49,12 +90,28 @@ class HomeViewModel extends ChangeNotifier {
         onError: (error) {
           _errorMessage = error.toString();
           _isLoading = false;
+          // En cas d'erreur, on affiche quand même les mock pour le design
+          _events = _mockEvents;
           notifyListeners();
         },
       );
+
+      // Maintenant on lance la récupération initiale et l'abonnement Realtime
+      await _eventService.subscribe();
+      
+      // Sécurité : si après 2 secondes on est toujours en loading (pas de réponse DB),
+      // on affiche les mock data pour ne pas bloquer l'utilisateur.
+      Future.delayed(const Duration(seconds: 2), () {
+        if (_isLoading) {
+          _events = _mockEvents;
+          _isLoading = false;
+          notifyListeners();
+        }
+      });
     } catch (e) {
       _errorMessage = e.toString();
       _isLoading = false;
+      _events = _mockEvents;
       notifyListeners();
     }
   }
