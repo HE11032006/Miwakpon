@@ -18,7 +18,7 @@ class AppConstants {
   static const String splashRoute = '/';
   static const String loginRoute = '/login';
   static const String homeRoute = '/home';
- static const String createEventRoute = '/events';
+  static const String createEventRoute = '/create';
   static const String eventDetailRoute = '/detail';
   static const String profileRoute = '/profile';
 

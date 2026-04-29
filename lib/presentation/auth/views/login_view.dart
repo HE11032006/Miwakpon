@@ -33,16 +33,16 @@ class LoginView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Logo / Titre principal
-                      _buildHeader(context, viewModel),
+                      _header(context, viewModel),
                       const SizedBox(height: 48),
                       // Formulaire
-                      _buildForm(context, viewModel),
+                      _form(context, viewModel),
                       const SizedBox(height: 24),
                       // Bouton de soumission
-                      _buildSubmitButton(context, viewModel),
+                      _submitButton(context, viewModel),
                       const SizedBox(height: 16),
                       // Lien pour basculer entre connexion/inscription
-                      _buildModeToggle(context, viewModel),
+                      _modeToggle(context, viewModel),
                     ],
                   ),
                 ),
@@ -57,7 +57,7 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AuthViewModel viewModel) {
+  Widget _header(BuildContext context, AuthViewModel viewModel) {
     return Column(
       children: [
         Container(
@@ -97,7 +97,7 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildForm(BuildContext context, AuthViewModel viewModel) {
+  Widget _form(BuildContext context, AuthViewModel viewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -234,7 +234,7 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context, AuthViewModel viewModel) {
+  Widget _submitButton(BuildContext context, AuthViewModel viewModel) {
     return Container(
       decoration: BoxDecoration(
         boxShadow: AppColors.shadowGolden,
@@ -264,7 +264,7 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildModeToggle(BuildContext context, AuthViewModel viewModel) {
+  Widget _modeToggle(BuildContext context, AuthViewModel viewModel) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

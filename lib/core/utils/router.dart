@@ -20,25 +20,28 @@ class AppRouter {
     initialLocation: AppConstants.splashRoute,
     debugLogDiagnostics: true,
     routes: <RouteBase>[
-      // --------------------------- Splash Screen ---------------------------
+      // Splash Screen
       GoRoute(
         path: AppConstants.splashRoute,
         name: 'splash',
-        builder: (BuildContext context, GoRouterState state) {
-          return const SplashView();
-        },
+        builder: (context, state) => const SplashView(),
       ),
 
-      // --------------------------- Authentification ---------------------------
+      // Authentification
       GoRoute(
         path: AppConstants.loginRoute,
         name: 'login',
-        builder: (BuildContext context, GoRouterState state) {
-          return const LoginView();
-        },
+        builder: (context, state) => const LoginView(),
       ),
 
-      // --------------------------- Shell Route (Main Layout) ---------------------------
+      // Route de création (Global)
+      GoRoute(
+        path: '/create',
+        name: 'create_event',
+        builder: (context, state) => const CreateEventView(),
+      ),
+
+      // Shell Route (Main Layout)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainLayout(navigationShell: navigationShell);
@@ -64,38 +67,26 @@ class AppRouter {
               ),
             ],
           ),
-          
 
-          // Branche 1 : Liste complète des événements
+          // Branche 1 : Liste des événements (Version de l'ami)
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/events',
                 name: 'events_list',
-                builder: (context, state) => const EventsListView(),
+                builder: (context, state) => const EventListView(),
+                routes: [
+                  GoRoute(
+                    path: 'detail/:id',
+                    name: 'events_detail',
+                    builder: (context, state) {
+                      final eventId = state.pathParameters['id']!;
+                      return EventDetailView(eventId: eventId);
+                    },
+                  ),
+                ],
               ),
             ],
-
-//         // Branche 1 : Liste des Événements 
-//   StatefulShellBranch(
-//     routes: [
-//       GoRoute(
-//         path: '/events',
-//         name: 'events',
-//         builder: (context, state) => const EventListView(),
-//         routes: [
-//           GoRoute(
-//             path: 'detail/:id',
-//             name: 'events_detail',
-//             builder: (context, state) {
-//               final eventId = state.pathParameters['id']!;
-//               return EventDetailView(eventId: eventId);
-//             },
-
-          ),
-        ],
-      ),
-    ],
           ),
 
           // Branche 2 : Profil
@@ -111,12 +102,6 @@ class AppRouter {
         ],
       ),
 
-      // Route de création (hors navigation bar, accessible via FAB)
-      GoRoute(
-        path: AppConstants.createEventRoute,
-        name: 'create',
-        builder: (context, state) => const CreateEventView(),
-      ),
     ],
 
     redirect: (context, state) {

@@ -46,7 +46,7 @@ class MainLayout extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
-                'assets/icons/icon.jpg',
+                'assets/icons/sans_fond.jpg',
                 width: 32,
                 height: 32,
                 fit: BoxFit.cover,
@@ -100,34 +100,35 @@ class MainLayout extends StatelessWidget {
             child: navigationShell,
           ),
           
-          // 2. Le bouton FAB (Placé entre le contenu et la navbar)
-          Positioned(
-            right: (MediaQuery.of(context).size.width / 6) - 28,
-            bottom: 75, // Ancré sur le bord supérieur (90 - 28)
-            child: GestureDetector(
-              onTap: () => context.push(AppConstants.createEventRoute),
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8C4B00),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFFFFB77C).withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF8C4B00).withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+          // 2. Le bouton FAB (Affiché uniquement sur le FEED)
+          if (navigationShell.currentIndex == 0)
+            Positioned(
+              right: (MediaQuery.of(context).size.width / 6) - 28,
+              bottom: 75, // Ancré sur le bord supérieur (90 - 28)
+              child: GestureDetector(
+                onTap: () => context.push(AppConstants.createEventRoute),
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8C4B00),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFFFFB77C).withValues(alpha: 0.2),
+                      width: 1,
                     ),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8C4B00).withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 28),
                 ),
-                child: const Icon(Icons.add, color: Colors.white, size: 28),
               ),
             ),
-          ),
 
           // 3. La Navbar (Placée en dernier pour être au-dessus du bas du bouton)
           Positioned(
@@ -222,10 +223,11 @@ class MainLayout extends StatelessWidget {
                 letterSpacing: 0.5,
               ),
             ),
-          ],
+            ],
+          ),
         ),
-      ),),
-    ),);
-    
-  }
+      ),
+    ),
+  );
+}
 }

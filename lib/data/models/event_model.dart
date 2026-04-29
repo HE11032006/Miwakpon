@@ -12,6 +12,8 @@ class EventModel extends EventEntity {
     required super.dateTime,
     required super.location,
     required super.organizerId,
+    super.organizerName,
+    super.organizerAvatarUrl,
     super.imageUrl,
     super.maxParticipants,
     required super.createdAt,
@@ -19,6 +21,8 @@ class EventModel extends EventEntity {
 
   /// Crée un EventModel depuis un Map (réponse Supabase).
   factory EventModel.fromMap(Map<String, dynamic> map) {
+    final organizerData = map['organizer'] as Map<String, dynamic>?;
+    
     return EventModel(
       id: map['id'] as String,
       title: map['title'] as String,
@@ -26,6 +30,8 @@ class EventModel extends EventEntity {
       dateTime: DateTime.parse(map['date_time'] as String),
       location: map['location'] as String? ?? '',
       organizerId: map['organizer_id'] as String,
+      organizerName: organizerData?['display_name'] as String?,
+      organizerAvatarUrl: organizerData?['avatar_url'] as String?,
       imageUrl: map['image_url'] as String?,
       maxParticipants: map['max_participants'] as int? ?? 50,
       createdAt: DateTime.parse(map['created_at'] as String),
@@ -61,6 +67,8 @@ class EventModel extends EventEntity {
     DateTime? dateTime,
     String? location,
     String? organizerId,
+    String? organizerName,
+    String? organizerAvatarUrl,
     String? imageUrl,
     int? maxParticipants,
     DateTime? createdAt,
@@ -72,6 +80,8 @@ class EventModel extends EventEntity {
       dateTime: dateTime ?? this.dateTime,
       location: location ?? this.location,
       organizerId: organizerId ?? this.organizerId,
+      organizerName: organizerName ?? this.organizerName,
+      organizerAvatarUrl: organizerAvatarUrl ?? this.organizerAvatarUrl,
       imageUrl: imageUrl ?? this.imageUrl,
       maxParticipants: maxParticipants ?? this.maxParticipants,
       createdAt: createdAt ?? this.createdAt,

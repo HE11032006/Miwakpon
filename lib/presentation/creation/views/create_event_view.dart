@@ -112,10 +112,24 @@ class _CreateEventViewState extends State<CreateEventView> {
   }
 
   void _createEvent(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint('Tentative de création d\'événement...');
+    
+    if (!_formKey.currentState!.validate()) {
+      debugPrint('Validation du formulaire échouée.');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Veuillez remplir tous les champs obligatoires (Titre, Lieu, Description...)'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+      return;
+    }
     
     final dateTime = _getCombinedDateTime();
     if (dateTime == null) {
+      debugPrint('Date ou heure manquante.');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Veuillez sélectionner une date et une heure')),
@@ -135,8 +149,10 @@ class _CreateEventViewState extends State<CreateEventView> {
     );
 
     if (viewModel.isSuccess) {
+      debugPrint('Création réussie ! Redirection...');
       if (mounted) context.go('/home');
     } else if (viewModel.errorMessage != null && mounted) {
+      debugPrint('Erreur lors de la création : ${viewModel.errorMessage}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(viewModel.errorMessage!)),
       );
@@ -451,9 +467,10 @@ class _CreateEventViewState extends State<CreateEventView> {
           ),
         ),
       ),
-    ),)
-  );
-}
+    ),
+    )
+    );
+  }
 
   Widget _selectCoverButton({bool isCompact = false}) {
     return InkWell(

@@ -59,27 +59,38 @@ class HomeView extends StatelessWidget {
                 ),
               ),
 
-              // ======================== FEATURED / HORIZONTAL LIST ========================
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 380,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: userEvents.length,
-                    itemBuilder: (context, index) {
-                      return _UserEventCard(event: userEvents[index]);
-                    },
+              // ======================== FEATURED / TOP 3 GLOBAL ========================
+              if (viewModel.featuredEvents.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Le Premier en Grand
+                      _FeaturedEventCard(event: viewModel.featuredEvents[0]),
+                      
+                      // Les autres en format normal (horizontal)
+                      if (viewModel.featuredEvents.length > 1)
+                        SizedBox(
+                          height: 260, // Hauteur augmentée
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: viewModel.featuredEvents.length - 1,
+                            itemBuilder: (context, index) {
+                              return _NormalEventCard(event: viewModel.featuredEvents[index + 1]);
+                            },
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              ),
 
-              // ======================== LATER THIS MONTH ========================
+              // ======================== LATER THIS MONTH (USER EVENTS) ========================
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
                   child: Text(
-                    'Later This Month',
+                    'Mes Événements',
                     style: GoogleFonts.newsreader(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -136,46 +147,26 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(String message) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
-      ),
-      child: Center(
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.beVietnamPro(
-            fontSize: 14,
-            color: AppColors.onSurfaceVariant,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ),
-    );
   }
-}
 
-/// Carte horizontale pour les événements de l'utilisateur
-class _UserEventCard extends StatelessWidget {
+
+/// Grand cadre en vedette pour le premier événement du Feed
+class _FeaturedEventCard extends StatelessWidget {
   final EventModel event;
-  const _UserEventCard({required this.event});
+  const _FeaturedEventCard({required this.event});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/home/detail/${event.id}'),
       child: Container(
-        width: 320,
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        width: double.infinity,
+        height: 400, // Retour à une grande taille immersive
+        margin: const EdgeInsets.fromLTRB(24, 16, 24, 24),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(25),
           image: DecorationImage(
-            image: event.imageUrl != null
+            image: event.imageUrl != null && event.imageUrl!.isNotEmpty
                 ? NetworkImage(event.imageUrl!)
                 : const AssetImage('assets/images/background.jpg') as ImageProvider,
             fit: BoxFit.cover,
@@ -191,56 +182,45 @@ class _UserEventCard extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(20),
+                  // Un blanc un peu plus "doux" et légèrement transparent
+                  color: Colors.white.withValues(alpha: 0.72), 
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        _badge('EXHIBITION', const Color(0xFFE8E1FF), const Color(0xFF6750A4)),
-                        const SizedBox(width: 8),
-                        _badge('${_getMonthAbbreviation(event.dateTime.month)} ${event.dateTime.day}', const Color(0xFFFFEBD6), const Color(0xFF8C4B00)),
-                      ],
-                    ),
+                    _badge('À LA UNE', const Color(0xFFFFEBD6), const Color(0xFF8C4B00)),
                     const SizedBox(height: 12),
                     Text(
                       event.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.newsreader(
-                        fontSize: 22,
+                        fontSize: 26,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF1D1B20),
                         height: 1.1,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      event.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 14,
-                        color: const Color(0xFF49454F),
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF8C4B00)),
+                        const Icon(Icons.location_on_outlined, color: Color(0xFF8C4B00), size: 18),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             event.location,
                             style: GoogleFonts.beVietnamPro(
-                              fontSize: 13,
+                              fontSize: 14,
                               color: const Color(0xFF49454F),
                               fontWeight: FontWeight.w500,
                             ),
@@ -260,26 +240,95 @@ class _UserEventCard extends StatelessWidget {
 
   Widget _badge(String label, Color bgColor, Color textColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         label,
         style: GoogleFonts.beVietnamPro(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
           color: textColor,
-          letterSpacing: 0.5,
+          letterSpacing: 1.1,
         ),
       ),
     );
   }
+}
 
-  String _getMonthAbbreviation(int month) {
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return months[month - 1];
+/// Carte normale (plus petite) pour les événements suivants
+class _NormalEventCard extends StatelessWidget {
+  final EventModel event;
+  const _NormalEventCard({required this.event});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/home/detail/${event.id}'),
+      child: Container(
+        width: 310,
+        margin: const EdgeInsets.only(left: 10, right: 8, bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          image: DecorationImage(
+            image: event.imageUrl != null && event.imageUrl!.isNotEmpty
+                ? NetworkImage(event.imageUrl!)
+                : const AssetImage('assets/images/background.jpg') as ImageProvider,
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.4),
+              BlendMode.darken,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                event.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.newsreader(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      event.location,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.beVietnamPro(
+                        fontSize: 12,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -299,8 +348,8 @@ class _LatestEventItem extends StatelessWidget {
           children: [
             // Boîte de date
             Container(
-              width: 60,
-              height: 60,
+              width: 55,
+              height: 55,
               decoration: BoxDecoration(
                 color: const Color(0xFFF3EDF7),
                 borderRadius: BorderRadius.circular(12),
@@ -311,7 +360,7 @@ class _LatestEventItem extends StatelessWidget {
                   Text(
                     '${event.dateTime.day}',
                     style: GoogleFonts.beVietnamPro(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF1D1B20),
                     ),
@@ -319,7 +368,7 @@ class _LatestEventItem extends StatelessWidget {
                   Text(
                     _getMonthAbbreviation(event.dateTime.month),
                     style: GoogleFonts.beVietnamPro(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF49454F),
                     ),
@@ -328,6 +377,20 @@ class _LatestEventItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
+            // Image miniature (si disponible)
+            if (event.imageUrl != null && event.imageUrl!.isNotEmpty)
+              Container(
+                width: 60,
+                height: 60,
+                margin: const EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    image: NetworkImage(event.imageUrl!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             // Infos
             Expanded(
               child: Column(

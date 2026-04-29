@@ -53,7 +53,7 @@ class EventsListView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      _buildSearchField(context),
+                      _searchField(context),
                     ],
                   ),
                 ),
@@ -86,7 +86,7 @@ class EventsListView extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchField(BuildContext context) {
+  Widget _searchField(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -133,9 +133,9 @@ class _EventCard extends StatelessWidget {
                       ? Image.network(
                           event.imageUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                          errorBuilder: (context, error, stackTrace) => _placeholder(),
                         )
-                      : _buildPlaceholder(),
+                      : _placeholder(),
                 ),
               ),
               Padding(
@@ -184,7 +184,7 @@ class _EventCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _placeholder() {
     return Container(
       color: AppColors.surfaceContainerHigh,
       child: const Center(

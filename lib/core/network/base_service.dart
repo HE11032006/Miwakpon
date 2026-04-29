@@ -21,13 +21,14 @@ import 'supabase_config.dart';
 /// ```
 abstract class BaseRealtimeService<T> {
   final String tableName;
+  final String selectQuery;
   final SupabaseClient _client = SupabaseConfig.client;
 
   RealtimeChannel? _channel;
   final StreamController<List<T>> _streamController =
       StreamController<List<T>>.broadcast();
 
-  BaseRealtimeService({required this.tableName});
+  BaseRealtimeService({required this.tableName, this.selectQuery = '*'});
 
   /// Convertit un Map en objet métier. À implémenter par les sous-classes.
   T fromMap(Map<String, dynamic> map);
@@ -58,7 +59,7 @@ abstract class BaseRealtimeService<T> {
   /// Récupère toutes les entrées de la table.
   Future<void> _fetchAll() async {
     try {
-      final response = await _client.from(tableName).select();
+      final response = await _client.from(tableName).select(selectQuery);
       final List<T> items =
           (response as List).map((e) => fromMap(e as Map<String, dynamic>)).toList();
       _streamController.add(items);

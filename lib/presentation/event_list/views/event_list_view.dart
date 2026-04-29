@@ -30,7 +30,7 @@ class EventListView extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 24, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -94,7 +94,7 @@ class EventListView extends StatelessWidget {
                         AppColors.cardPeach
                       ];
                       final Color cardColor = colors[index % colors.length];
-                      return _buildEventCard(context, event, cardColor);
+                      return _eventCard(context, event, cardColor);
                     },
                     childCount: events.length,
                   ),
@@ -108,7 +108,7 @@ class EventListView extends StatelessWidget {
     );
   }
 
-  Widget _buildEventCard(BuildContext context, dynamic event, Color bgColor) {
+  Widget _eventCard(BuildContext context, dynamic event, Color bgColor) {
     const List<String> months = [
       "JAN", "FEV", "MAR", "AVR", "MAI", "JUN",
       "JUL", "AOU", "SEP", "OCT", "NOV", "DEC"
@@ -124,23 +124,34 @@ class EventListView extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(12),
+          image: event.imageUrl != null && event.imageUrl!.isNotEmpty
+              ? DecorationImage(
+                  image: NetworkImage(event.imageUrl!),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withValues(alpha: 0.3),
+                    BlendMode.darken,
+                  ),
+                )
+              : null,
         ),
         child: Stack(
           children: [
-            Positioned(
-              right: -20,
-              top: 0,
-              bottom: 0,
-              child: Container(
-                width: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(200),
+            if (event.imageUrl == null || event.imageUrl!.isEmpty)
+              Positioned(
+                right: -20,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(200),
+                    ),
                   ),
                 ),
               ),
-            ),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

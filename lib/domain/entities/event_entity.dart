@@ -10,6 +10,8 @@ class EventEntity {
   final DateTime dateTime;
   final String location;
   final String organizerId;
+  final String? organizerName;
+  final String? organizerAvatarUrl;
   final String? imageUrl;
   final int maxParticipants;
   final DateTime createdAt;
@@ -21,6 +23,8 @@ class EventEntity {
     required this.dateTime,
     required this.location,
     required this.organizerId,
+    this.organizerName,
+    this.organizerAvatarUrl,
     this.imageUrl,
     this.maxParticipants = 50,
     required this.createdAt,

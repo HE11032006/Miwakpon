@@ -16,27 +16,29 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// Événements postés par l'utilisateur actuel (ou simulés pour le design)
+  /// Les 3 derniers événements postés par l'utilisateur actuel
   List<EventModel> get userEvents {
     final userId = SupabaseConfig.client.auth.currentUser?.id;
-    final userSpecific = _events.where((e) => e.organizerId == userId || e.organizerId == 'mock-user').toList();
+    final userSpecific = _events.where((e) => e.organizerId == userId).toList();
     
-    // Si on n'a vraiment rien (loading terminé mais liste vide), 
-    // on retourne une partie des mock data pour le rendu visuel
+    userSpecific.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    
     if (userSpecific.isEmpty && _events.isEmpty) {
-      return _mockEvents.where((e) => e.organizerId == 'mock-user').toList();
+      return _mockEvents.where((e) => e.organizerId == 'mock-user').take(3).toList();
     }
-    return userSpecific;
+    return userSpecific.take(3).toList();
   }
 
-  /// Les derniers événements globaux
-  List<EventModel> get latestEvents {
-    if (_events.isEmpty) return _mockEvents;
-    
-    final sorted = List<EventModel>.from(_events);
+  /// Le Top 3 des événements globaux pour le Feed
+  List<EventModel> get featuredEvents {
+    final allEvents = _events.isEmpty ? _mockEvents : _events;
+    final sorted = List<EventModel>.from(allEvents);
     sorted.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return sorted.take(5).toList();
+    return sorted.take(3).toList();
   }
+
+  /// Alias pour la compatibilité avec la vue actuelle (pour l'instant)
+  List<EventModel> get latestEvents => userEvents;
 
   HomeViewModel() {
     _initRealtimeStream();

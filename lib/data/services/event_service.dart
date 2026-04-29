@@ -17,7 +17,10 @@ import '../models/event_model.dart';
 /// });
 /// ```
 class EventService extends BaseRealtimeService<EventModel> {
-  EventService() : super(tableName: AppConstants.eventsTable);
+  EventService() : super(
+    tableName: AppConstants.eventsTable,
+    selectQuery: '*, organizer:organizer_id(*)',
+  );
 
   @override
   EventModel fromMap(Map<String, dynamic> map) => EventModel.fromMap(map);

@@ -19,10 +19,11 @@ class EventListViewModel extends ChangeNotifier {
     _subscribeToEvents();
   }
 
-  void _subscribeToEvents() {
+  Future<void> _subscribeToEvents() async {
     _isLoading = true;
     notifyListeners();
 
+    // S'abonner au flux
     _eventsSubscription = _eventService.stream.listen(
       (eventList) {
         _events = eventList;
@@ -37,12 +38,14 @@ class EventListViewModel extends ChangeNotifier {
       },
     );
 
-    Future.delayed(const Duration(seconds: 5), () {
-      if (_isLoading && _events.isEmpty) {
-        _isLoading = false;
-        notifyListeners();
-      }
-    });
+    // Lancer la récupération initiale et l'écoute Realtime
+    try {
+      await _eventService.subscribe();
+    } catch (e) {
+      _errorMessage = "Erreur de connexion Supabase : $e";
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   @override

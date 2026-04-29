@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../event_list/views/event_list_view.dart'; 
+import '../../../core/theme/app_colors.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
 
 class EventDetailView extends StatefulWidget {
@@ -48,7 +48,7 @@ class _EventDetailViewState extends State<EventDetailView> {
                       width: double.infinity,
                       margin: const EdgeInsets.fromLTRB(16, 50, 16, 0),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF2F2F2),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(24),
                         image: event.imageUrl != null 
                           ? DecorationImage(
@@ -61,36 +61,48 @@ class _EventDetailViewState extends State<EventDetailView> {
                         borderRadius: BorderRadius.circular(24),
                         child: Stack(
                           children: [
+                            // Overlay dégradé pour la lisibilité
                             Positioned.fill(
-                              child: Opacity(
-                                opacity: 0.2,
-                                child: CustomPaint(painter: GeometricPainter()),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(alpha: 0.7),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(32.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end, // Texte en bas pour mieux voir l'image
                                 children: [
                                   Text(
                                     event.title,
                                     style: GoogleFonts.newsreader(
                                       fontSize: 32,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white, // Texte en blanc sur l'overlay
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    event.description.length > 100 
-                                      ? "${event.description.substring(0, 100)}..." 
-                                      : event.description,
-                                    style: GoogleFonts.beVietnamPro(
-                                      fontSize: 15,
-                                      color: Colors.black54,
-                                      height: 1.4,
-                                    ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        event.location,
+                                        style: GoogleFonts.beVietnamPro(
+                                          fontSize: 14,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -102,56 +114,53 @@ class _EventDetailViewState extends State<EventDetailView> {
                   ),
 
                   SliverToBoxAdapter(
-                    child: Transform.translate(
-                      offset: const Offset(0, -10),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 32),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            )
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildAvatarStack(),
-                                Text(
-                                  "Attending",
-                                  style: GoogleFonts.beVietnamPro(
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.check_circle_outline, size: 20),
-                                label: const Text("JOIN EVENT", style: TextStyle(letterSpacing: 1.1)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  elevation: 0,
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(32, 24, 32, 32), // Plus d'espace en haut
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _avatarStack(),
+                              Text(
+                                "Attending",
+                                style: GoogleFonts.beVietnamPro(
+                                  color: AppColors.onSurface.withValues(alpha: 0.6),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
                                 ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.check_circle_outline, size: 20),
+                              label: const Text("JOIN EVENT", style: TextStyle(letterSpacing: 1.1)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                elevation: 0,
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -160,26 +169,29 @@ class _EventDetailViewState extends State<EventDetailView> {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        _buildSectionHeader(Icons.info_outline, "About"),
+                        _sectionHeader(Icons.info_outline, "About"),
+                        
+                        _divider(),
                         const SizedBox(height: 12),
                         Text(
                           event.description,
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 15,
                             height: 1.7,
-                            color: Colors.black87.withOpacity(0.8),
+                            color: const Color(0xFF1D1B20).withValues(alpha: 0.8),
                           ),
                         ),
-                        const SizedBox(height: 32),
-                        
-                        _buildSectionHeader(Icons.location_on_outlined, "Location"),
+                        const SizedBox(height: 24),                       
+                        _sectionHeader(Icons.location_on_outlined, "Location"),
+                        _divider(),
                         const SizedBox(height: 12),
-                        _buildLocationCard(event.location),
-                        const SizedBox(height: 32),
+                        _locationCard(event.location),
+                        const SizedBox(height: 40),
                         
-                        _buildSectionHeader(Icons.person_outline, "Host"),
+                        
+                        _sectionHeader(Icons.person_outline, "Host"),
                         const SizedBox(height: 16),
-                        _buildHostCard(event),
+                        _hostCard(event),
                         const SizedBox(height: 100),
                       ]),
                     ),
@@ -188,12 +200,21 @@ class _EventDetailViewState extends State<EventDetailView> {
               ),
 
               Positioned(
-                top: 60,
-                left: 25,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                  style: IconButton.styleFrom(backgroundColor: Colors.white70),
+                top: 50,
+                left: 20,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: 'Retour',
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -203,20 +224,40 @@ class _EventDetailViewState extends State<EventDetailView> {
     );
   }
 
-  Widget _buildSectionHeader(IconData icon, String title) {
+  Widget _sectionHeader(IconData icon, String title) {
     return Row(
       children: [
         Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(width: 10),
         Text(
           title,
-          style: GoogleFonts.newsreader(fontSize: 24, fontWeight: FontWeight.w600),
+          style: GoogleFonts.newsreader(
+            fontSize: 24, 
+            fontWeight: FontWeight.w600,
+            color: AppColors.onSurface, // Couleur plus foncée
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildAvatarStack() {
+  Widget _divider() {
+    return Container(
+      width: double.infinity,
+      height: 1,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.0),
+            AppColors.primary.withValues(alpha: 0.2),
+            AppColors.primary.withValues(alpha: 0.0),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _avatarStack() {
     return SizedBox(
       width: 120,
       height: 35,
@@ -247,17 +288,36 @@ class _EventDetailViewState extends State<EventDetailView> {
     );
   }
 
-  Widget _buildLocationCard(String location) {
+  Widget _locationCard(String location) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F5F2),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.03),
+            blurRadius: 2,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.map_outlined, color: AppColors.primary),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.map_outlined, color: AppColors.primary, size: 20),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -265,22 +325,30 @@ class _EventDetailViewState extends State<EventDetailView> {
               children: [
                 Text(
                   location, 
-                  style: GoogleFonts.beVietnamPro(fontWeight: FontWeight.bold, fontSize: 16)
+                  style: GoogleFonts.beVietnamPro(
+                    fontWeight: FontWeight.w700, 
+                    fontSize: 17,
+                    color: const Color(0xFF1D1B20),
+                  )
                 ),
-                const Text(
+                Text(
                   "Abomey, Benin", 
-                  style: TextStyle(color: Colors.black54, fontSize: 13)
+                  style: GoogleFonts.beVietnamPro(
+                    color: const Color(0xFF49454F), 
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  )
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () {},
                   child: Text(
                     "VIEW MAP", 
                     style: GoogleFonts.beVietnamPro(
                       color: AppColors.primary, 
-                      fontWeight: FontWeight.bold, 
+                      fontWeight: FontWeight.w800, 
                       fontSize: 12,
-                      letterSpacing: 0.5,
+                      letterSpacing: 1.1,
                     )
                   ),
                 ),
@@ -292,7 +360,7 @@ class _EventDetailViewState extends State<EventDetailView> {
     );
   }
 
-  Widget _buildHostCard(dynamic event) {
+  Widget _hostCard(dynamic event) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -309,12 +377,23 @@ class _EventDetailViewState extends State<EventDetailView> {
                 child: Icon(Icons.person, color: Colors.white),
               ),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Host ID: ${event.organizerId}", style: GoogleFonts.beVietnamPro(fontWeight: FontWeight.bold, fontSize: 17)),
-                  const Text("Community Member", style: TextStyle(color: Colors.black54)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.organizerName ?? "Artisan Miwakpon", 
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.beVietnamPro(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 17,
+                        color: AppColors.onSurface,
+                      )
+                    ),
+                    const Text("Organisateur de l'événement", style: TextStyle(color: Colors.black54, fontSize: 13)),
+                  ],
+                ),
               ),
             ],
           ),
