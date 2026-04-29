@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../viewmodels/create_event_viewmodel.dart';
 import '../../../core/theme/app_colors.dart';
@@ -146,46 +147,79 @@ class _CreateEventViewState extends State<CreateEventView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.canvasWhite,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Nouvel Événement'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, color: AppColors.onSurface),
           onPressed: () => context.go('/home'),
+        ),
+        title: Text(
+          'New',
+          style: GoogleFonts.newsreader(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primary,
+            fontStyle: FontStyle.italic,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => _createEvent(context),
             child: Text(
               'PUBLIER',
-              style: TextStyle(
+              style: GoogleFonts.beVietnamPro(
                 color: AppColors.primary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
               ),
             ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.canvasWhite,
+              AppColors.canvasWhite.withValues(alpha: 0.8),
+              Colors.white,
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               // Titre principal de l'événement
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Titre de l\'événement',
-                    hintStyle: TextStyle(color: AppColors.outline),
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    hintText: 'Agogohoun in Ouidah',
+                    hintStyle: GoogleFonts.newsreader(
+                      color: AppColors.outline.withValues(alpha: 0.4),
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  style: GoogleFonts.newsreader(
+                    fontSize: 32,
                     fontWeight: FontWeight.w600,
+                    color: AppColors.primary.withValues(alpha: 0.8),
                   ),
                   textAlign: TextAlign.center,
                   validator: (value) {
@@ -194,9 +228,6 @@ class _CreateEventViewState extends State<CreateEventView> {
                     }
                     return null;
                   },
-                  onChanged: (value) {
-                    setState(() {});
-                  },
                 ),
               ),
               const SizedBox(height: 8),
@@ -204,24 +235,30 @@ class _CreateEventViewState extends State<CreateEventView> {
               // Section Select Cover
               Container(
                 width: double.infinity,
-                height: 200,
+                height: 220,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.outline.withValues(alpha: 0.3)),
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: _imageUrl != null
                     ? Stack(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             child: Image.file(
                               File(_imageUrl!),
                               width: double.infinity,
-                              height: 200,
+                              height: 220,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
-                                return _buildSelectCoverButton();
+                                return _selectCoverButton();
                               },
                             ),
                           ),
@@ -229,183 +266,173 @@ class _CreateEventViewState extends State<CreateEventView> {
                             top: 12,
                             right: 12,
                             child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _imageUrl = null;
-                                });
-                              },
+                              onTap: () => setState(() => _imageUrl = null),
                               child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: const BoxDecoration(
-                                  color: Colors.black54,
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.4),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
+                                child: const Icon(Icons.close, color: Colors.white, size: 18),
                               ),
                             ),
                           ),
+                          Positioned(
+                            bottom: 16,
+                            left: 16,
+                            child: _selectCoverButton(isCompact: true),
+                          ),
                         ],
                       )
-                    : _buildSelectCoverButton(),
+                    : Stack(
+                        children: [
+                          Positioned(
+                            bottom: 16,
+                            left: 16,
+                            child: _selectCoverButton(),
+                          ),
+                        ],
+                      ),
               ),
               const SizedBox(height: 32),
 
               // Section Chronology
-              _buildSectionHeader('Chronologie'),
+              _sectionHeader('Chronology'),
               const SizedBox(height: 12),
-              
-              // Date
-              _buildDateSelector(),
-              const SizedBox(height: 16),
-              
-              // Heures au format "18:00 - 23:00"
-              _buildTimeSelector(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _dateSelector(),
+                    const Divider(height: 32, color: AppColors.canvasWhite),
+                    _timeSelector(),
+                  ],
+                ),
+              ),
               const SizedBox(height: 32),
 
               // Section Location
-              _buildSectionHeader('Lieu'),
+              _sectionHeader('Location'),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Entrez le lieu de l\'événement',
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                  border: UnderlineInputBorder(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer un lieu';
-                  }
-                  return null;
-                },
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined, color: AppColors.outline, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _locationController.text.isEmpty ? null : _locationController.text,
+                        hint: Text('Select Location', style: GoogleFonts.beVietnamPro(color: AppColors.outline, fontSize: 14)),
+                        decoration: const InputDecoration(border: InputBorder.none, isDense: true, contentPadding: EdgeInsets.zero),
+                        items: ['Ouidah', 'Cotonou', 'Porto-Novo', 'Abomey', 'Grand-Popo']
+                            .map((city) => DropdownMenuItem(value: city, child: Text(city, style: GoogleFonts.beVietnamPro(fontSize: 14))))
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) setState(() => _locationController.text = value);
+                        },
+                        validator: (value) => (value == null || value.isEmpty) ? 'Required' : null,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 32),
 
               // Section The Narrative
-              _buildSectionHeader('La Narration'),
+              _sectionHeader('The Narrative'),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Racontez l\'histoire de cet événement...',
-                  border: OutlineInputBorder(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                maxLines: 6,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer une description';
-                  }
-                  return null;
-                },
+                child: TextFormField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    hintText: 'Tell the story of this gathering...',
+                    hintStyle: GoogleFonts.beVietnamPro(color: AppColors.outline.withValues(alpha: 0.4), fontSize: 14),
+                    border: InputBorder.none,
+                  ),
+                  maxLines: 5,
+                  style: GoogleFonts.beVietnamPro(fontSize: 14, color: AppColors.onSurface),
+                  validator: (value) => (value == null || value.isEmpty) ? 'Required' : null,
+                ),
               ),
               const SizedBox(height: 32),
 
               // Section Ambiance Palette
-              _buildSectionHeader('Palette d\'Ambiance'),
+              _sectionHeader('Ambiance Palette'),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
                 children: [
-                  _buildAmbianceOption('Terre de Ouidah', AppColors.primary),
-                  _buildAmbianceOption('Bleu Lagune', AppColors.bleuLagune),
-                  _buildAmbianceOption('Jaune Wax', AppColors.jauneSoleil),
+                  _ambianceOption('Terre de Ouidah', AppColors.primary),
+                  _ambianceOption('Bleu Lagune', AppColors.bleuLagune),
+                  _ambianceOption('Jaune Wax', AppColors.jauneSoleil),
                 ],
               ),
               const SizedBox(height: 32),
 
-              // Section Type d'Événement
+              // Section Gathering Type
               Row(
                 children: [
                   Expanded(
-                    child: GestureDetector(
+                    child: _gatheringTypeOption(
+                      title: 'Public Gathering',
+                      icon: Icons.people_outline,
+                      isSelected: _eventType == 'public',
                       onTap: () => setState(() => _eventType = 'public'),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: _eventType == 'public' ? AppColors.primary : Colors.transparent,
-                          border: Border.all(color: AppColors.outline),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.people,
-                              color: _eventType == 'public' ? AppColors.onPrimary : AppColors.outline,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Rassemblement Public',
-                              style: TextStyle(
-                                color: _eventType == 'public' ? AppColors.onPrimary : AppColors.outline,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: GestureDetector(
+                    child: _gatheringTypeOption(
+                      title: 'Private Ceremony',
+                      icon: Icons.key_outlined,
+                      isSelected: _eventType == 'private',
                       onTap: () => setState(() => _eventType = 'private'),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: _eventType == 'private' ? AppColors.primary : Colors.transparent,
-                          border: Border.all(color: AppColors.outline),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.key,
-                              color: _eventType == 'private' ? AppColors.onPrimary : AppColors.outline,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Cérémonie Privée',
-                              style: TextStyle(
-                                color: _eventType == 'private' ? AppColors.onPrimary : AppColors.outline,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 48),
 
-              // Section Participants max
-              _buildSectionHeader('Nombre maximum de participants'),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _maxParticipantsController,
-                decoration: const InputDecoration(
-                  labelText: 'Participants maximum',
-                  prefixIcon: Icon(Icons.people_outline),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer un nombre';
-                  }
-                  final number = int.tryParse(value);
-                  if (number == null || number <= 0) {
-                    return 'Veuillez entrer un nombre valide';
-                  }
-                  return null;
-                },
-              ),
+
             ],
           ),
         ),
@@ -413,60 +440,37 @@ class _CreateEventViewState extends State<CreateEventView> {
     );
   }
 
-  Widget _buildSelectCoverButton() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.add_photo_alternate_outlined,
-            size: 48,
-            color: AppColors.outline,
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: _pickImage,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.onPrimary,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              elevation: 0,
-            ),
-            child: const Text('Sélectionner une image'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: AppColors.onSurface,
-      ),
-    );
-  }
-
-  Widget _buildDateSelector() {
+  Widget _selectCoverButton({bool isCompact = false}) {
     return InkWell(
-      onTap: () => _selectDate(context),
+      onTap: _pickImage,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.outline)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.calendar_today, color: AppColors.outline),
-            const SizedBox(width: 12),
+            Icon(
+              Icons.image_outlined,
+              size: 18,
+              color: AppColors.primary.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: 8),
             Text(
-              _selectedDate != null
-                  ? '${_selectedDate!.day} ${_getMonthName(_selectedDate!.month)} ${_selectedDate!.year}'
-                  : '12 Oct 2026',
-              style: TextStyle(
-                color: _selectedDate != null ? AppColors.onSurface : AppColors.outline,
+              'Select Cover',
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurface,
               ),
             ),
           ],
@@ -475,7 +479,40 @@ class _CreateEventViewState extends State<CreateEventView> {
     );
   }
 
-  Widget _buildTimeSelector() {
+  Widget _sectionHeader(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.beVietnamPro(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.outline,
+      ),
+    );
+  }
+
+  Widget _dateSelector() {
+    return InkWell(
+      onTap: () => _selectDate(context),
+      child: Row(
+        children: [
+          const Icon(Icons.calendar_today_outlined, color: AppColors.outline, size: 20),
+          const SizedBox(width: 12),
+          Text(
+            _selectedDate != null
+                ? '${_selectedDate!.day} ${_getMonthName(_selectedDate!.month)} ${_selectedDate!.year}'
+                : '12 Oct 2024',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: _selectedDate != null ? AppColors.onSurface : AppColors.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _timeSelector() {
     final startTimeText = _startTime != null
         ? '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}'
         : '18:00';
@@ -483,65 +520,119 @@ class _CreateEventViewState extends State<CreateEventView> {
         ? '${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}'
         : '23:00';
     
-    return Row(
-      children: [
-        Expanded(
-          child: InkWell(
-            onTap: () async {
-              await _selectStartTime(context);
-              if (_startTime != null && mounted) {
-                await _selectEndTime(context);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AppColors.outline)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.access_time, color: AppColors.outline),
-                  const SizedBox(width: 12),
-                  Text(
-                    '$startTimeText - $endTimeText',
-                    style: TextStyle(
-                      color: (_startTime != null && _endTime != null) ? AppColors.onSurface : AppColors.outline,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAmbianceOption(String name, Color color) {
-    final isSelected = _ambiance == name;
-    return GestureDetector(
-      onTap: () => setState(() => _ambiance = name),
-      child: Column(
+    return InkWell(
+      onTap: () async {
+        await _selectStartTime(context);
+        if (_startTime != null && mounted) {
+          await _selectEndTime(context);
+        }
+      },
+      child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              border: isSelected ? Border.all(color: AppColors.onSurface, width: 2) : null,
-            ),
-          ),
-          const SizedBox(height: 8),
+          const Icon(Icons.access_time_outlined, color: AppColors.outline, size: 20),
+          const SizedBox(width: 12),
           Text(
-            name,
-            style: TextStyle(
-              fontSize: 12,
-              color: isSelected ? AppColors.onSurface : AppColors.outline,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            '$startTimeText - $endTimeText',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.onSurface,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _ambianceOption(String name, Color color) {
+    final isSelected = _ambiance == name;
+    return GestureDetector(
+      onTap: () => setState(() => _ambiance = name),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(24),
+          border: isSelected ? Border.all(color: AppColors.primary, width: 1.5) : null,
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ] : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              name,
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? AppColors.onSurface : AppColors.outline,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _gatheringTypeOption({
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFBF4EE) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.black.withValues(alpha: 0.05),
+            width: isSelected ? 1.5 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 28,
+              color: isSelected ? AppColors.primary : AppColors.outline,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? AppColors.primary : AppColors.onSurface,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
