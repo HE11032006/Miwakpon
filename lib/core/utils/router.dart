@@ -11,6 +11,7 @@ import '../../presentation/detail/views/event_detail_view.dart';
 import '../../presentation/profile/views/profile_view.dart';
 import '../../presentation/widgets/main_layout.dart';
 import '../constants/app_constants.dart';
+import '../../presentation/event_list/views/event_list_view.dart';
 
 class AppRouter {
   AppRouter._();
@@ -64,6 +65,7 @@ class AppRouter {
             ],
           ),
           
+
           // Branche 1 : Liste complète des événements
           StatefulShellBranch(
             routes: [
@@ -73,6 +75,27 @@ class AppRouter {
                 builder: (context, state) => const EventsListView(),
               ),
             ],
+
+//         // Branche 1 : Liste des Événements 
+//   StatefulShellBranch(
+//     routes: [
+//       GoRoute(
+//         path: '/events',
+//         name: 'events',
+//         builder: (context, state) => const EventListView(),
+//         routes: [
+//           GoRoute(
+//             path: 'detail/:id',
+//             name: 'events_detail',
+//             builder: (context, state) {
+//               final eventId = state.pathParameters['id']!;
+//               return EventDetailView(eventId: eventId);
+//             },
+
+          ),
+        ],
+      ),
+    ],
           ),
 
           // Branche 2 : Profil

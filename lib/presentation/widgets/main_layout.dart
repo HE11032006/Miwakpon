@@ -91,6 +91,7 @@ class MainLayout extends StatelessWidget {
           ),
         ],
       ),
+
       body: Stack(
         children: [
           // 1. Le contenu principal
