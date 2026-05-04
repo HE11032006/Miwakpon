@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
+import '../../participation/viewmodels/participation_viewmodel.dart';
+import '../../participation/views/participation_view.dart';
 
 class EventDetailView extends StatefulWidget {
   final String eventId;
@@ -133,7 +135,7 @@ class _EventDetailViewState extends State<EventDetailView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _avatarStack(),
+                              _avatarStack(viewModel.participantCount),
                               Text(
                                 "Attending",
                                 style: GoogleFonts.beVietnamPro(
@@ -145,21 +147,76 @@ class _EventDetailViewState extends State<EventDetailView> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.check_circle_outline, size: 20),
-                              label: const Text("JOIN EVENT", style: TextStyle(letterSpacing: 1.1)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
+                          Consumer<EventDetailViewModel>(
+  builder: (context, vm, _) {
+    final isFull = vm.isFull && !vm.isParticipating;
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton.icon(
+            onPressed: isFull
+                ? null
+                : () async {
+                    final error = vm.isParticipating
+                        ? await vm.leaveEvent()
+                        : await vm.joinEvent();
+                    if (error != null && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(error)),
+                      );
+                    }
+                  },
+            icon: Icon(
+              vm.isParticipating
+                  ? Icons.cancel_outlined
+                  : Icons.check_circle_outline,
+              size: 20,
+            ),
+            label: Text(
+              isFull
+                  ? "COMPLET"
+                  : vm.isParticipating
+                      ? "LEAVE EVENT"
+                      : "JOIN EVENT",
+              style: const TextStyle(letterSpacing: 1.1),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: vm.isParticipating
+                  ? AppColors.error
+                  : isFull
+                      ? AppColors.surfaceDim
+                      : AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChangeNotifierProvider(
+                  create: (_) => ParticipationViewModel(),
+                  child: ParticipationView(eventId: widget.eventId),
+                ),
+              ),
+            );
+          },
+          child: Text(
+            'Voir les ${vm.participantCount} participant${vm.participantCount > 1 ? 's' : ''}',
+            style: TextStyle(color: AppColors.secondary),
+          ),
+        ),
+      ],
+    );
+  },
+),
                         ],
                       ),
                     ),
@@ -257,36 +314,43 @@ class _EventDetailViewState extends State<EventDetailView> {
     );
   }
 
-  Widget _avatarStack() {
-    return SizedBox(
-      width: 120,
-      height: 35,
-      child: Stack(
-        children: [
-          for (var i = 0; i < 3; i++)
-            Positioned(
-              left: i * 20,
-              child: CircleAvatar(
-                radius: 17,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 15,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/100?u=user$i'),
-                ),
-              ),
-            ),
-          const Positioned(
-            left: 65,
+Widget _avatarStack(int participantCount) {
+  return SizedBox(
+    width: 120,
+    height: 35,
+    child: Stack(
+      children: [
+        for (var i = 0; i < 3; i++)
+          Positioned(
+            left: i * 20,
             child: CircleAvatar(
               radius: 17,
-              backgroundColor: Color(0xFFF0F0F0),
-              child: Text("+42", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54)),
+              backgroundColor: Colors.white,
+              child: CircleAvatar(
+                radius: 15,
+                backgroundImage: NetworkImage('https://i.pravatar.cc/100?u=user$i'),
+              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        Positioned(
+          left: 65,
+          child: CircleAvatar(
+            radius: 17,
+            backgroundColor: const Color(0xFFF0F0F0),
+            child: Text(
+              participantCount > 3 ? '+${participantCount - 3}' : '',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _locationCard(String location) {
     return Container(

@@ -56,6 +56,24 @@ CREATE TABLE public.participants (
   joined_at timestamptz default now()
 );
 
+-- Permettre à un utilisateur connecté de s'inscrire
+CREATE POLICY "Users can join events"
+ON participants FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = user_id);
+
+-- Permettre à un utilisateur de se désinscrire
+CREATE POLICY "Users can leave events"
+ON participants FOR DELETE
+TO authenticated
+USING (auth.uid() = user_id);
+
+-- Permettre de lire les participants
+CREATE POLICY "Anyone can view participants"
+ON participants FOR SELECT
+TO authenticated
+USING (true);
+
 -- ==========================================
 -- 2. ACTIVATION DU TEMPS RÉEL (REALTIME)
 -- ==========================================
