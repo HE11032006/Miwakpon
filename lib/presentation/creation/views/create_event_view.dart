@@ -7,9 +7,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../viewmodels/create_event_viewmodel.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/event_model.dart';
 
 class CreateEventView extends StatefulWidget {
-  const CreateEventView({super.key});
+  final EventModel? editEvent;
+  const CreateEventView({super.key, this.editEvent});
 
   @override
   State<CreateEventView> createState() => _CreateEventViewState();
@@ -28,6 +30,23 @@ class _CreateEventViewState extends State<CreateEventView> {
   String? _imageUrl;
   String _ambiance = 'Terre de Ouidah';
   final ImagePicker _imagePicker = ImagePicker();
+
+  bool get _isEditing => widget.editEvent != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditing) {
+      final e = widget.editEvent!;
+      _titleController.text = e.title;
+      _descriptionController.text = e.description;
+      _locationController.text = e.location;
+      _maxParticipantsController.text = '${e.maxParticipants ?? 50}';
+      _selectedDate = e.dateTime;
+      _startTime = TimeOfDay.fromDateTime(e.dateTime);
+      _imageUrl = e.imageUrl;
+    }
+  }
 
   @override
   void dispose() {
@@ -171,7 +190,7 @@ class _CreateEventViewState extends State<CreateEventView> {
           onPressed: () => context.go('/home'),
         ),
         title: Text(
-          'New',
+          _isEditing ? 'Modifier' : 'New',
           style: GoogleFonts.newsreader(
             fontSize: 20,
             fontWeight: FontWeight.w600,

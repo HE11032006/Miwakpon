@@ -5,7 +5,6 @@ import '../network/supabase_config.dart';
 import '../../presentation/splash/views/splash_view.dart';
 import '../../presentation/auth/views/login_view.dart';
 import '../../presentation/home/views/home_view.dart';
-import '../../presentation/events/views/events_list_view.dart';
 import '../../presentation/creation/views/create_event_view.dart';
 import '../../presentation/detail/views/event_detail_view.dart';
 import '../../presentation/profile/views/profile_view.dart';

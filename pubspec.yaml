@@ -24,16 +24,11 @@ dependencies:
 
   # Internationalisation / Dates
   intl: ^0.20.2
-# <<<<<<< HEAD
-  
   # Environment variables
   flutter_dotenv: ^6.0.1
   
   # Image picker
-  # image_picker: ^1.1.2
-# =======
   image_picker: ^1.2.1
-# >>>>>>> cd9e98ff749ceed05c4149351c66fa72091876df
 
 dev_dependencies:
   flutter_test:

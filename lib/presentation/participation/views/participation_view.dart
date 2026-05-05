@@ -82,15 +82,14 @@ class _ParticipationViewState extends State<ParticipationView> {
               Expanded(
                 child: ListView.separated(
                   itemCount: vm.participants.length,
-                  separatorBuilder: (_, __) => Divider(
+                  separatorBuilder: (_, _) => Divider(
                     height: 1,
-                    color: AppColors.primary.withOpacity(0.12),
+                    color: AppColors.primary.withValues(alpha: 0.12),
                     indent: 72,
                   ),
                   itemBuilder: (context, index) {
                     final p = vm.participants[index];
                     final name = 'Participant ${index + 1}';
-                    final String? avatarUrl = null;
                     final joinedAt = p['joined_at'] != null
                         ? DateTime.tryParse(p['joined_at'])
                         : null;
@@ -98,7 +97,7 @@ class _ParticipationViewState extends State<ParticipationView> {
                   return ListTile(
                     leading: CircleAvatar(
                       radius: 22,
-                      backgroundColor: AppColors.primary.withOpacity(0.15),
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                       child: Text(
                         '${index + 1}',
                         style: TextStyle(
@@ -137,7 +136,7 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.secondary.withOpacity(0.10),
+        color: AppColors.secondary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

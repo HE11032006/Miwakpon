@@ -10,17 +10,18 @@ class EventDetailViewModel extends ChangeNotifier {
   bool _isParticipating = false;
   int _participantCount = 0;
   String? _errorMessage;
+  List<String?> _participantAvatars = [];
 
   EventModel? get event => _event;
   bool get isLoading => _isLoading;
   bool get isParticipating => _isParticipating;
   int get participantCount => _participantCount;
   String? get errorMessage => _errorMessage;
+  List<String?> get participantAvatars => _participantAvatars;
 
   bool get isFull =>
       _event != null &&
-      _event!.maxParticipants != null &&
-      _participantCount >= _event!.maxParticipants!;
+      _participantCount >= _event!.maxParticipants;
 
   Future<void> loadEvent(String id) async {
     _isLoading = true;
@@ -30,17 +31,27 @@ class EventDetailViewModel extends ChangeNotifier {
     try {
       final data = await _supabase
           .from('events')
-          .select()
+          .select('*, organizer:organizer_id(*)')
           .eq('id', id)
           .single();
       _event = EventModel.fromMap(data);
 
-      final countResult = await _supabase
+      // Recuperer les participants avec leurs infos utilisateur
+      final participantsData = await _supabase
           .from('participants')
-          .select('id')
+          .select('id, user_id, users(avatar_url)')
           .eq('event_id', id);
-      _participantCount = (countResult as List).length;
+      
+      final participants = participantsData as List;
+      _participantCount = participants.length;
 
+      // Extraire les avatars des participants
+      _participantAvatars = participants.map<String?>((p) {
+        final userData = p['users'] as Map<String, dynamic>?;
+        return userData?['avatar_url'] as String?;
+      }).toList();
+
+      // Verifier si l'utilisateur actuel participe
       final userId = SupabaseConfig.currentUser?.id;
       if (userId != null) {
         final participation = await _supabase
@@ -52,8 +63,8 @@ class EventDetailViewModel extends ChangeNotifier {
         _isParticipating = participation != null;
       }
     } catch (e) {
-      debugPrint('Erreur lors du chargement du détail: $e');
-      _errorMessage = 'Impossible de charger l\'événement.';
+      debugPrint('Erreur lors du chargement du detail: $e');
+      _errorMessage = 'Impossible de charger l\'evenement.';
       _event = null;
     } finally {
       _isLoading = false;
@@ -62,11 +73,11 @@ class EventDetailViewModel extends ChangeNotifier {
   }
 
   Future<String?> joinEvent() async {
-    if (_event == null) return 'Événement introuvable.';
+    if (_event == null) return 'Evenement introuvable.';
     if (isFull) return 'Le nombre maximum de participants est atteint.';
 
     final userId = SupabaseConfig.currentUser?.id;
-    if (userId == null) return 'Vous devez être connecté.';
+    if (userId == null) return 'Vous devez etre connecte.';
 
     try {
       await _supabase.from('participants').insert({
@@ -84,10 +95,10 @@ class EventDetailViewModel extends ChangeNotifier {
   }
 
   Future<String?> leaveEvent() async {
-    if (_event == null) return 'Événement introuvable.';
+    if (_event == null) return 'Evenement introuvable.';
 
     final userId = SupabaseConfig.currentUser?.id;
-    if (userId == null) return 'Vous devez être connecté.';
+    if (userId == null) return 'Vous devez etre connecte.';
 
     try {
       await _supabase
@@ -100,7 +111,7 @@ class EventDetailViewModel extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return 'Erreur lors de la désinscription : $e';
+      return 'Erreur lors de la desinscription : $e';
     }
   }
 }

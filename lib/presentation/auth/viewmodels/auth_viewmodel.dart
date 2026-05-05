@@ -4,49 +4,68 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/supabase_config.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
+
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  final emailController = TextEditingController();
+  final usernameController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final otpController = TextEditingController();
 
   bool _isLoginMode = true;
+  bool _otpSent = false;
+  bool _otpVerified = false;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => SupabaseConfig.isAuthenticated;
   bool get isLoginMode => _isLoginMode;
+  bool get otpSent => _otpSent;
+  bool get otpVerified => _otpVerified;
 
   void toggleMode() {
     _isLoginMode = !_isLoginMode;
     _errorMessage = null;
-    emailController.clear();
+    _otpSent = false;
+    _otpVerified = false;
+    usernameController.clear();
+    phoneController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+    otpController.clear();
     notifyListeners();
   }
 
   String? validateForm() {
-    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
     final password = passwordController.text.trim();
 
-    if (email.isEmpty) {
-      return 'Veuillez saisir votre email';
+    if (phone.isEmpty) {
+      return 'Veuillez saisir votre numero de telephone';
     }
-    if (!email.contains('@') || !email.contains('.')) {
-      return 'Veuillez saisir un email valide';
+    if (phone.length < 8) {
+      return 'Le numero de telephone doit contenir au moins 8 chiffres';
     }
     if (password.isEmpty) {
       return 'Veuillez saisir votre mot de passe';
     }
     if (password.length < 6) {
-      return 'Le mot de passe doit contenir au moins 6 caractères';
+      return 'Le mot de passe doit contenir au moins 6 caracteres';
     }
 
     if (!_isLoginMode) {
+      final username = usernameController.text.trim();
       final confirmPassword = confirmPasswordController.text.trim();
+
+      if (username.isEmpty) {
+        return 'Veuillez saisir un nom d\'utilisateur';
+      }
+      if (username.length < 3) {
+        return 'Le nom d\'utilisateur doit contenir au moins 3 caracteres';
+      }
       if (confirmPassword != password) {
         return 'Les mots de passe ne correspondent pas';
       }
@@ -55,15 +74,34 @@ class AuthViewModel extends ChangeNotifier {
     return null;
   }
 
-  /// Connexion avec email et mot de passe.
-  Future<bool> signInWithEmail(String email, String password) async {
+  /// Verifie si le username existe deja
+  Future<bool> _isUsernameAvailable(String username) async {
+    try {
+      final result = await SupabaseConfig.client
+          .from('users')
+          .select('id')
+          .eq('username', username)
+          .maybeSingle();
+      return result == null;
+    } catch (e) {
+      debugPrint('Erreur verification username: $e');
+      return true; // En cas d'erreur on laisse passer
+    }
+  }
+
+  /// Connexion avec telephone et mot de passe.
+  /// On utilise le telephone comme identifiant email factice (phone@miwakpon.app)
+  Future<bool> signInWithPhone(String phone, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
+      // On cree un email factice a partir du numero de telephone
+      final fakeEmail = '${phone.replaceAll('+', '')}@miwakpon.app';
+      
       final response = await SupabaseConfig.auth.signInWithPassword(
-        email: email,
+        email: fakeEmail,
         password: password,
       );
 
@@ -81,28 +119,48 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// Inscription avec email et mot de passe.
-  Future<bool> signUpWithEmail(String email, String password) async {
+  /// Inscription avec telephone et mot de passe.
+  Future<bool> signUpWithPhone(String phone, String password, String username) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
+      // Verifier si le username est disponible
+      final available = await _isUsernameAvailable(username);
+      if (!available) {
+        _errorMessage = 'Ce nom d\'utilisateur est deja pris';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      final fakeEmail = '${phone.replaceAll('+', '')}@miwakpon.app';
+      
       final response = await SupabaseConfig.auth.signUp(
-        email: email,
+        email: fakeEmail,
         password: password,
         data: {
-          'display_name': email.split('@')[0],
+          'display_name': username,
+          'username': username,
+          'phone': phone,
           'avatar_url': null,
         },
       );
 
       if (response.user != null) {
+        // Mettre a jour le username dans public.users
+        try {
+          await SupabaseConfig.client
+              .from('users')
+              .update({'username': username, 'display_name': username})
+              .eq('id', response.user!.id);
+        } catch (e) {
+          debugPrint('Erreur mise a jour username dans public.users: $e');
+        }
+
         _isLoading = false;
         notifyListeners();
-        
-        // Retourne true même si l'utilisateur doit confirmer son email
-        // ou si l'inscription est réussie
         return true;
       }
       return false;
@@ -125,45 +183,36 @@ class AuthViewModel extends ChangeNotifier {
       return;
     }
 
-    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
     final password = passwordController.text.trim();
 
     if (_isLoginMode) {
-      // Mode CONNEXION
-      final success = await signInWithEmail(email, password);
+      final success = await signInWithPhone(phone, password);
       if (success && context.mounted) {
-        // Nettoyer les champs
-        emailController.clear();
+        phoneController.clear();
         passwordController.clear();
-        
-        // Rediriger vers l'accueil
         context.go(AppConstants.homeRoute);
       }
     } else {
-      // Mode INSCRIPTION
-      final success = await signUpWithEmail(email, password);
+      final username = usernameController.text.trim();
+      final success = await signUpWithPhone(phone, password, username);
       if (success && context.mounted) {
-        // Afficher un message de succès
         _showSuccessMessage(context);
-        
-        // Nettoyer les champs
-        emailController.clear();
+        usernameController.clear();
+        phoneController.clear();
         passwordController.clear();
         confirmPasswordController.clear();
-        
-        // Basculer automatiquement en mode connexion
+        otpController.clear();
         _isLoginMode = true;
         _errorMessage = null;
+        _otpSent = false;
+        _otpVerified = false;
         notifyListeners();
-        
-        // Rediriger vers la page de connexion
-        // On reste sur la même page mais en mode connexion
-        // Le message de succès est déjà affiché
       }
     }
   }
 
-  /// Afficher un message de succès après inscription
+  /// Afficher un message de succes apres inscription
   void _showSuccessMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -173,7 +222,7 @@ class AuthViewModel extends ChangeNotifier {
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Compte créé avec succès ! Veuillez vous connecter.',
+                'Compte cree avec succes ! Veuillez vous connecter.',
                 style: TextStyle(fontSize: 14),
               ),
             ),
@@ -186,18 +235,22 @@ class AuthViewModel extends ChangeNotifier {
     );
   }
 
-  /// Déconnexion.
+  /// Deconnexion.
   Future<void> signOut(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       await SupabaseConfig.auth.signOut();
-      emailController.clear();
+      usernameController.clear();
+      phoneController.clear();
       passwordController.clear();
       confirmPasswordController.clear();
+      otpController.clear();
       _errorMessage = null;
       _isLoginMode = true;
+      _otpSent = false;
+      _otpVerified = false;
       
       if (context.mounted) {
         context.go(AppConstants.loginRoute);
@@ -210,31 +263,33 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// Convertit les messages d'erreur techniques en messages compréhensibles
+  /// Convertit les messages d'erreur techniques en messages comprehensibles
   String _getUserFriendlyErrorMessage(String error) {
     if (error.contains('Invalid login credentials')) {
-      return 'Email ou mot de passe incorrect';
+      return 'Numero de telephone ou mot de passe incorrect';
     }
     if (error.contains('User already registered')) {
-      return 'Cet email est déjà utilisé';
+      return 'Ce numero de telephone est deja utilise';
     }
     if (error.contains('Email not confirmed')) {
-      return 'Veuillez confirmer votre email avant de vous connecter';
+      return 'Votre compte n\'est pas encore confirme';
     }
     if (error.contains('Password should be at least 6 characters')) {
-      return 'Le mot de passe doit contenir au moins 6 caractères';
+      return 'Le mot de passe doit contenir au moins 6 caracteres';
     }
     if (error.contains('network')) {
-      return 'Erreur de connexion. Vérifiez votre réseau';
+      return 'Erreur de connexion. Verifiez votre reseau';
     }
-    return 'Une erreur est survenue. Veuillez réessayer';
+    return 'Une erreur est survenue. Veuillez reessayer';
   }
 
   @override
   void dispose() {
-    emailController.dispose();
+    usernameController.dispose();
+    phoneController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    otpController.dispose();
     super.dispose();
   }
 }

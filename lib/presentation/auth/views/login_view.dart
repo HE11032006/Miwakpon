@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../widgets/common_widgets.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
-/// Écran d'authentification Miwakpon
+/// Ecran d'authentification Miwakpon
 ///
-/// Design inspiré du mouvement impressionniste béninois :
-/// - Palette ocre et indigo
-/// - Typographie Newsreader pour les titres, Be Vietnam Pro pour les champs
-/// - Champs avec style underline
-/// - Bouton principal avec ombre dorée
+/// Design avec Ambient.png en fond, logo de l'app,
+/// et formulaire de connexion/inscription par telephone.
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
@@ -18,41 +16,63 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Consumer<AuthViewModel>(
-          builder: (context, viewModel, child) {
-            return Stack(
-              children: [
-                // Contenu principal
-                SingleChildScrollView(
+      body: Consumer<AuthViewModel>(
+        builder: (context, viewModel, child) {
+          return Stack(
+            children: [
+              // Fond Ambient
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/ambient.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              // Overlay pour lisibilite
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        AppColors.background.withValues(alpha: 0.7),
+                        AppColors.background.withValues(alpha: 0.95),
+                        AppColors.background,
+                      ],
+                      stops: const [0.0, 0.25, 0.45, 0.6],
+                    ),
+                  ),
+                ),
+              ),
+              // Contenu principal
+              SafeArea(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
-                    vertical: 48,
+                    vertical: 32,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Logo / Titre principal
+                      const SizedBox(height: 40),
                       _header(context, viewModel),
-                      const SizedBox(height: 48),
-                      // Formulaire
+                      const SizedBox(height: 40),
                       _form(context, viewModel),
                       const SizedBox(height: 24),
-                      // Bouton de soumission
                       _submitButton(context, viewModel),
                       const SizedBox(height: 16),
-                      // Lien pour basculer entre connexion/inscription
                       _modeToggle(context, viewModel),
                     ],
                   ),
                 ),
-                // Indicateur de chargement
-                if (viewModel.isLoading)
-                  const AppLoadingIndicator(),
-              ],
-            );
-          },
-        ),
+              ),
+              // Indicateur de chargement
+              if (viewModel.isLoading)
+                const AppLoadingIndicator(),
+            ],
+          );
+        },
       ),
     );
   }
@@ -60,38 +80,48 @@ class LoginView extends StatelessWidget {
   Widget _header(BuildContext context, AuthViewModel viewModel) {
     return Column(
       children: [
+        // Logo de l'app
         Container(
-          width: 80,
-          height: 80,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
-            boxShadow: AppColors.shadowLight,
+            boxShadow: AppColors.shadowGolden,
           ),
-          child: const Icon(
-            Icons.event_available,
-            size: 40,
-            color: AppColors.primary,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(45),
+            child: Image.asset(
+              'assets/icons/sans_fond.jpg',
+              width: 90,
+              height: 90,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         Text(
           'Miwakpon',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontFamily: 'Newsreader',
-                color: AppColors.primary,
-              ),
+          style: GoogleFonts.newsreader(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
-        Text(
-          viewModel.isLoginMode
-              ? 'Connectez-vous à votre compte'
-              : 'Créez votre compte',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-          textAlign: TextAlign.center,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            viewModel.isLoginMode
+                ? 'Connectez-vous pour profiter de moments uniques'
+                : 'Creez votre compte pour profiter de moments uniques',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 15,
+              color: AppColors.onSurfaceVariant,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
@@ -101,44 +131,44 @@ class LoginView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Champ Email
-        Text(
-          'Email',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
+        // Champ Username (inscription uniquement)
+        if (!viewModel.isLoginMode) ...[
+          _fieldLabel(context, 'Nom d\'utilisateur'),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: viewModel.usernameController,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            enabled: !viewModel.isLoading,
+            style: const TextStyle(color: AppColors.textPrimary),
+            decoration: _inputDecoration(
+              hint: 'Ex: johndoe',
+              icon: Icons.person_outline,
+            ),
+            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+          ),
+          const SizedBox(height: 20),
+        ],
+
+        // Champ Telephone
+        _fieldLabel(context, 'Numero de telephone'),
         const SizedBox(height: 8),
         TextFormField(
-          controller: viewModel.emailController,
-          keyboardType: TextInputType.emailAddress,
+          controller: viewModel.phoneController,
+          keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
           enabled: !viewModel.isLoading,
           style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: 'vous@exemple.com',
-            hintStyle: const TextStyle(color: AppColors.textLight),
-            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
+          decoration: _inputDecoration(
+            hint: '+229 XX XX XX XX',
+            icon: Icons.phone_outlined,
           ),
           onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
         const SizedBox(height: 20),
 
         // Champ Mot de passe
-        Text(
-          'Mot de passe',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
+        _fieldLabel(context, 'Mot de passe'),
         const SizedBox(height: 8),
         TextFormField(
           controller: viewModel.passwordController,
@@ -148,16 +178,9 @@ class LoginView extends StatelessWidget {
               : TextInputAction.next,
           enabled: !viewModel.isLoading,
           style: const TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: '••••••••',
-            hintStyle: const TextStyle(color: AppColors.textLight),
-            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
+          decoration: _inputDecoration(
+            hint: 'Minimum 6 caracteres',
+            icon: Icons.lock_outline,
           ),
           onFieldSubmitted: (_) {
             if (viewModel.isLoginMode) {
@@ -171,13 +194,7 @@ class LoginView extends StatelessWidget {
         // Champ Confirmation (uniquement pour l'inscription)
         if (!viewModel.isLoginMode) ...[
           const SizedBox(height: 20),
-          Text(
-            'Confirmer le mot de passe',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
+          _fieldLabel(context, 'Confirmer le mot de passe'),
           const SizedBox(height: 8),
           TextFormField(
             controller: viewModel.confirmPasswordController,
@@ -185,16 +202,9 @@ class LoginView extends StatelessWidget {
             textInputAction: TextInputAction.done,
             enabled: !viewModel.isLoading,
             style: const TextStyle(color: AppColors.textPrimary),
-            decoration: InputDecoration(
-              hintText: '••••••••',
-              hintStyle: const TextStyle(color: AppColors.textLight),
-              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.primary, width: 2),
-              ),
+            decoration: _inputDecoration(
+              hint: 'Retapez votre mot de passe',
+              icon: Icons.lock_outline,
             ),
             onFieldSubmitted: (_) => viewModel.submitForm(context),
           ),
@@ -234,6 +244,34 @@ class LoginView extends StatelessWidget {
     );
   }
 
+  Widget _fieldLabel(BuildContext context, String label) {
+    return Text(
+      label,
+      style: GoogleFonts.beVietnamPro(
+        fontSize: 13,
+        color: AppColors.textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: AppColors.textLight),
+      prefixIcon: Icon(icon, color: AppColors.primary),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
+      ),
+      focusedBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: AppColors.primary, width: 2),
+      ),
+    );
+  }
+
   Widget _submitButton(BuildContext context, AuthViewModel viewModel) {
     return Container(
       decoration: BoxDecoration(
@@ -250,11 +288,11 @@ class LoginView extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 0, // L'ombre est gérée par le Container
+          elevation: 0,
         ),
         child: Text(
           viewModel.isLoginMode ? 'SE CONNECTER' : "S'INSCRIRE",
-          style: const TextStyle(
+          style: GoogleFonts.beVietnamPro(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 1,
@@ -271,8 +309,8 @@ class LoginView extends StatelessWidget {
         Text(
           viewModel.isLoginMode
               ? "Pas encore de compte ?"
-              : "Déjà un compte ?",
-          style: TextStyle(
+              : "Deja un compte ?",
+          style: GoogleFonts.beVietnamPro(
             color: AppColors.textSecondary,
           ),
         ),
@@ -283,7 +321,7 @@ class LoginView extends StatelessWidget {
           ),
           child: Text(
             viewModel.isLoginMode ? "S'inscrire" : "Se connecter",
-            style: const TextStyle(
+            style: GoogleFonts.beVietnamPro(
               fontWeight: FontWeight.w600,
             ),
           ),

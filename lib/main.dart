@@ -75,21 +75,15 @@ class Miwakpon extends StatelessWidget {
         // --------------------------- Liste des événements (Membre 4) ---------------------------
       ChangeNotifierProvider(create: (_) => EventListViewModel(EventService())),
       ],
-      child: Consumer<ProfileViewModel>(
-        builder: (context, profileVM, _) {
-          return MaterialApp.router(
-            title: AppConstants.appName,
-            debugShowCheckedModeBanner: false,
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
 
-            // Thème dynamique basé sur le choix de l'utilisateur
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: profileVM.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        // Theme clair uniquement (pas de mode sombre)
+        theme: AppTheme.lightTheme,
 
-            // Navigation GoRouter
-            routerConfig: AppRouter.router,
-          );
-        },
+        // Navigation GoRouter
+        routerConfig: AppRouter.router,
       ),
     );
   }

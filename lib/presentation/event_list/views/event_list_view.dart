@@ -1,54 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../core/theme/app_colors.dart';
 import '../viewmodels/event_list_viewmodel.dart';
 
-class AppColors {
-  static const Color primary = Color(0xFF8C4B00);
-  static const Color secondary = Color(0xFF4C56AF);
-  static const Color canvasWhite = Color(0xFFFDFBFA);
-  static const Color outline = Color(0xFF877365);
-  
-  static const Color cardOrange = Color(0xFFB9732A);
-  static const Color cardBlue = Color(0xFF8D96E9);
-  static const Color cardPeach = Color(0xFFFDB981);
+class EventListView extends StatefulWidget {
+  const EventListView({super.key});
+
+  @override
+  State<EventListView> createState() => _EventListViewState();
 }
 
-class EventListView extends StatelessWidget {
-  const EventListView({super.key});
+class _EventListViewState extends State<EventListView> {
+  final _searchController = TextEditingController();
+  final _locationController = TextEditingController();
+  bool _showFilters = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.canvasWhite,
+      backgroundColor: AppColors.background,
       body: Consumer<EventListViewModel>(
         builder: (context, viewModel, child) {
           final events = viewModel.events;
 
           return CustomScrollView(
             slivers: [
+              // Header
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 24, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Découvrir les événements',
+                        'Evenements',
                         style: GoogleFonts.newsreader(
-                          fontSize: 26, 
-                          fontWeight: FontWeight.w600, 
-                          color: AppColors.primary
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
-                        'Explorez les rythmes culturels et les rencontres façonnés par notre communauté.',
+                        'Explorez les evenements de la communaute.',
                         style: GoogleFonts.beVietnamPro(
-                          fontSize: 16, 
+                          fontSize: 15,
                           height: 1.4,
-                          color: Colors.black87.withOpacity(0.7)
+                          color: AppColors.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -56,11 +64,99 @@ class EventListView extends StatelessWidget {
                 ),
               ),
 
+              // Barre de recherche
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.outline.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (val) => viewModel.setSearchQuery(val),
+                            style: GoogleFonts.beVietnamPro(fontSize: 14),
+                            decoration: InputDecoration(
+                              hintText: 'Rechercher par nom...',
+                              hintStyle: GoogleFonts.beVietnamPro(
+                                color: AppColors.textLight,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // Bouton filtres
+                      GestureDetector(
+                        onTap: () {
+                          setState(() => _showFilters = !_showFilters);
+                        },
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: _showFilters
+                                ? AppColors.primary
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _showFilters
+                                  ? AppColors.primary
+                                  : AppColors.outline.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.tune,
+                            color: _showFilters
+                                ? Colors.white
+                                : AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Zone de filtres avances
+              if (_showFilters)
+                SliverToBoxAdapter(
+                  child: _filtersSection(context, viewModel),
+                ),
+
+              // Chips de filtres actifs
+              if (viewModel.showOnlyMine ||
+                  viewModel.locationFilter.isNotEmpty ||
+                  viewModel.dateFilter != null)
+                SliverToBoxAdapter(
+                  child: _activeFiltersChips(context, viewModel),
+                ),
+
+              // Liste
               if (viewModel.isLoading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
+                    child:
+                        CircularProgressIndicator(color: AppColors.primary),
                   ),
                 )
               else if (events.isEmpty)
@@ -70,15 +166,39 @@ class EventListView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.event_busy, size: 50, color: AppColors.outline),
+                        Icon(
+                          Icons.event_busy,
+                          size: 50,
+                          color: AppColors.outline.withValues(alpha: 0.5),
+                        ),
                         const SizedBox(height: 16),
                         Text(
-                          "Pas d'événements pour le moment",
+                          "Aucun evenement trouve",
                           style: GoogleFonts.beVietnamPro(
-                            color: AppColors.outline, 
+                            color: AppColors.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
+                        if (viewModel.searchQuery.isNotEmpty ||
+                            viewModel.showOnlyMine ||
+                            viewModel.dateFilter != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: TextButton(
+                              onPressed: () {
+                                viewModel.clearFilters();
+                                _searchController.clear();
+                                _locationController.clear();
+                              },
+                              child: Text(
+                                'Effacer les filtres',
+                                style: GoogleFonts.beVietnamPro(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -89,9 +209,9 @@ class EventListView extends StatelessWidget {
                     (context, index) {
                       final event = events[index];
                       final List<Color> colors = [
-                        AppColors.cardOrange, 
-                        AppColors.cardBlue, 
-                        AppColors.cardPeach
+                        const Color(0xFFB9732A),
+                        const Color(0xFF8D96E9),
+                        const Color(0xFFFDB981),
                       ];
                       final Color cardColor = colors[index % colors.length];
                       return _eventCard(context, event, cardColor);
@@ -99,11 +219,245 @@ class EventListView extends StatelessWidget {
                     childCount: events.length,
                   ),
                 ),
-              
+
               const SliverToBoxAdapter(child: SizedBox(height: 80)),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _filtersSection(BuildContext context, EventListViewModel viewModel) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outline.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Filtre par lieu
+          Text(
+            'Lieu',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TextField(
+              controller: _locationController,
+              onChanged: (val) => viewModel.setLocationFilter(val),
+              style: GoogleFonts.beVietnamPro(fontSize: 13),
+              decoration: InputDecoration(
+                hintText: 'Rechercher par lieu...',
+                hintStyle: GoogleFonts.beVietnamPro(
+                  color: AppColors.textLight,
+                  fontSize: 13,
+                ),
+                prefixIcon: const Icon(Icons.location_on_outlined,
+                    color: AppColors.primary, size: 18),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Filtre par date
+          Text(
+            'Date',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: viewModel.dateFilter ?? DateTime.now(),
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2030),
+              );
+              viewModel.setDateFilter(picked);
+            },
+            child: Container(
+              height: 42,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today_outlined,
+                      color: AppColors.primary, size: 18),
+                  const SizedBox(width: 10),
+                  Text(
+                    viewModel.dateFilter != null
+                        ? DateFormat('dd/MM/yyyy').format(viewModel.dateFilter!)
+                        : 'Selectionner une date...',
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 13,
+                      color: viewModel.dateFilter != null
+                          ? AppColors.onSurface
+                          : AppColors.textLight,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (viewModel.dateFilter != null)
+                    GestureDetector(
+                      onTap: () => viewModel.setDateFilter(null),
+                      child: const Icon(Icons.close,
+                          size: 18, color: AppColors.onSurfaceVariant),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Toggle mes evenements / tout le monde
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (viewModel.showOnlyMine) viewModel.toggleShowOnlyMine();
+                  },
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: !viewModel.showOnlyMine
+                          ? AppColors.primary
+                          : AppColors.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Tout le monde',
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: !viewModel.showOnlyMine
+                              ? Colors.white
+                              : AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (!viewModel.showOnlyMine) viewModel.toggleShowOnlyMine();
+                  },
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: viewModel.showOnlyMine
+                          ? AppColors.primary
+                          : AppColors.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Mes evenements',
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: viewModel.showOnlyMine
+                              ? Colors.white
+                              : AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _activeFiltersChips(
+      BuildContext context, EventListViewModel viewModel) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: [
+          if (viewModel.showOnlyMine)
+            _filterChip('Mes evenements', () => viewModel.toggleShowOnlyMine()),
+          if (viewModel.locationFilter.isNotEmpty)
+            _filterChip(
+              'Lieu: ${viewModel.locationFilter}',
+              () {
+                viewModel.setLocationFilter('');
+                _locationController.clear();
+              },
+            ),
+          if (viewModel.dateFilter != null)
+            _filterChip(
+              'Date: ${DateFormat('dd/MM').format(viewModel.dateFilter!)}',
+              () => viewModel.setDateFilter(null),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filterChip(String label, VoidCallback onRemove) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 12,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: onRemove,
+            child: const Icon(Icons.close, size: 14, color: AppColors.primary),
+          ),
+        ],
       ),
     );
   }
@@ -145,7 +499,7 @@ class EventListView extends StatelessWidget {
                 child: Container(
                   width: 120,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(200),
                     ),
@@ -159,20 +513,23 @@ class EventListView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white.withOpacity(0.5)),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.5)),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.calendar_today_outlined, size: 14, color: Colors.white),
+                        const Icon(Icons.calendar_today_outlined,
+                            size: 14, color: Colors.white),
                         const SizedBox(width: 8),
                         Text(
                           "$monthStr $dayStr",
                           style: GoogleFonts.beVietnamPro(
-                            color: Colors.white, 
+                            color: Colors.white,
                             fontWeight: FontWeight.w500,
                             fontSize: 13,
                           ),
@@ -193,15 +550,15 @@ class EventListView extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.location_on_outlined, 
-                        size: 16, 
-                        color: Colors.white.withOpacity(0.8),
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         event.location,
                         style: GoogleFonts.beVietnamPro(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 14,
                         ),
                       ),
