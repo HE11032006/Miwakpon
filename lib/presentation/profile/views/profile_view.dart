@@ -20,11 +20,18 @@ class ProfileView extends StatelessWidget {
             );
           }
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                // Header profil avec photo
-                _profileHeader(context, profileVM),
+          return Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/ambient.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Header profil avec photo
+                  _profileHeader(context, profileVM),
                 const SizedBox(height: 24),
                 // Infos du compte
                 _accountSection(context, profileVM),
@@ -37,11 +44,12 @@ class ProfileView extends StatelessWidget {
                 const SizedBox(height: 100),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 
   Widget _profileHeader(BuildContext context, ProfileViewModel profileVM) {
     return Container(

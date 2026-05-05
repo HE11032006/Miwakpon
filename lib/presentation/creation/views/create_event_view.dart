@@ -41,7 +41,7 @@ class _CreateEventViewState extends State<CreateEventView> {
       _titleController.text = e.title;
       _descriptionController.text = e.description;
       _locationController.text = e.location;
-      _maxParticipantsController.text = '${e.maxParticipants ?? 50}';
+      _maxParticipantsController.text = '${e.maxParticipants}';
       _selectedDate = e.dateTime;
       _startTime = TimeOfDay.fromDateTime(e.dateTime);
       _imageUrl = e.imageUrl;

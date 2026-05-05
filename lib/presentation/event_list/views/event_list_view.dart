@@ -33,8 +33,15 @@ class _EventListViewState extends State<EventListView> {
         builder: (context, viewModel, child) {
           final events = viewModel.events;
 
-          return CustomScrollView(
-            slivers: [
+          return Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/ambient.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: CustomScrollView(
+              slivers: [
               // Header
               SliverToBoxAdapter(
                 child: Padding(
@@ -222,11 +229,12 @@ class _EventListViewState extends State<EventListView> {
 
               const SliverToBoxAdapter(child: SizedBox(height: 80)),
             ],
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 
   Widget _filtersSection(BuildContext context, EventListViewModel viewModel) {
     return Container(

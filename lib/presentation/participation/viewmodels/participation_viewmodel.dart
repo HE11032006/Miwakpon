@@ -2,16 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/network/supabase_config.dart';
 
-// TODO: Implémentation par Membre 5
-// ViewModel pour la gestion des participants.
-//
-// Responsabilités :
-// - Récupérer la liste des participants d'un événement
-// - Gérer l'ajout/suppression de participants
-// - Temps réel via Supabase Realtime (table 'participants')
-
 class ParticipationViewModel extends ChangeNotifier {
-    final _supabase = Supabase.instance.client;
+  final _supabase = Supabase.instance.client;
 
   List<Map<String, dynamic>> _participants = [];
   bool _isLoading = true;
@@ -31,11 +23,12 @@ class ParticipationViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Recuperer les participants avec leurs infos utilisateur (username, avatar_url)
       final response = await _supabase
-    .from('participants')
-    .select('*')
-    .eq('event_id', eventId)
-    .order('joined_at', ascending: true);
+          .from('participants')
+          .select('*, users(username, avatar_url, display_name)')
+          .eq('event_id', eventId)
+          .order('joined_at', ascending: true);
 
       _participants = List<Map<String, dynamic>>.from(response);
 
@@ -56,7 +49,8 @@ class ParticipationViewModel extends ChangeNotifier {
   }
 
   void _subscribeToRealtime(String eventId) {
-    _channel?.unsubscribe();
+    if (_channel != null) return; // Deja souscrit
+    
     _channel = _supabase
         .channel('participants:$eventId')
         .onPostgresChanges(
@@ -75,7 +69,7 @@ class ParticipationViewModel extends ChangeNotifier {
 
   Future<String?> joinEvent(String eventId) async {
     final userId = SupabaseConfig.currentUser?.id;
-    if (userId == null) return 'Vous devez être connecté.';
+    if (userId == null) return 'Vous devez etre connecte.';
 
     try {
       await _supabase.from('participants').insert({
@@ -93,7 +87,7 @@ class ParticipationViewModel extends ChangeNotifier {
 
   Future<String?> leaveEvent(String eventId) async {
     final userId = SupabaseConfig.currentUser?.id;
-    if (userId == null) return 'Vous devez être connecté.';
+    if (userId == null) return 'Vous devez etre connecte.';
 
     try {
       await _supabase
@@ -105,7 +99,7 @@ class ParticipationViewModel extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return 'Erreur lors de la désinscription : $e';
+      return 'Erreur lors de la desinscription : $e';
     }
   }
 

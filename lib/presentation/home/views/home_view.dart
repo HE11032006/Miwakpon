@@ -29,178 +29,192 @@ class HomeView extends StatelessWidget {
           final userEvents = viewModel.userEvents;
           final featuredEvents = viewModel.featuredEvents;
 
-          return CustomScrollView(
-            slivers: [
-              // ======================== HEADER ========================
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 40, 24, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Tableau de bord',
-                        style: GoogleFonts.newsreader(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.onSurface,
-                          height: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Bienvenue sur votre espace evenements',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 16,
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+          return Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/ambient.png'),
+                fit: BoxFit.cover,
               ),
-
-              // ======================== FEATURED / 3 EVENTS ALEATOIRES ========================
-              if (featuredEvents.isNotEmpty)
+            ),
+            child: CustomScrollView(
+              slivers: [
+                // ======================== HEADER ========================
                 SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Le premier en grand
-                      _FeaturedEventCard(event: featuredEvents[0]),
-                      
-                      // Les autres en format horizontal
-                      if (featuredEvents.length > 1)
-                        SizedBox(
-                          height: 260,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: featuredEvents.length - 1,
-                            itemBuilder: (context, index) {
-                              return _NormalEventCard(event: featuredEvents[index + 1]);
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-              if (featuredEvents.isEmpty)
-                const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: AppEmptyState(message: 'Aucun evenement en cours'),
-                  ),
-                ),
-
-              // ======================== MES EVENEMENTS (2 derniers + fleche voir plus) ========================
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Mes evenements',
-                        style: GoogleFonts.newsreader(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.onSurface,
-                        ),
-                      ),
-                      // Bouton fleche pour voir plus
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const UserEventsHistoryView(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Voir plus',
-                                style: GoogleFonts.beVietnamPro(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(
-                                Icons.arrow_forward,
-                                size: 16,
-                                color: AppColors.primary,
-                              ),
-                            ],
+                    padding: const EdgeInsets.fromLTRB(24, 40, 24, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tableau de bord',
+                          style: GoogleFonts.newsreader(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.onSurface,
+                            height: 1.1,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              if (userEvents.isEmpty)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: AppEmptyState(
-                        message: 'Vous n\'avez pas encore poste d\'evenement'),
-                  ),
-                )
-              else
-                SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFE5E2E1)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Bienvenue sur votre espace evenements',
+                          style: GoogleFonts.beVietnamPro(
+                            fontSize: 16,
+                            color: AppColors.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: List.generate(userEvents.length, (index) {
-                        final event = userEvents[index];
-                        final isLast = index == userEvents.length - 1;
+                  ),
+                ),
 
-                        return Column(
-                          children: [
-                            _LatestEventItem(event: event),
-                            if (!isLast) const _HorizontalDivider(),
-                          ],
-                        );
-                      }),
+                // ======================== FEATURED / 3 EVENTS ALEATOIRES ========================
+                if (featuredEvents.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Le premier en grand
+                        _FeaturedEventCard(event: featuredEvents[0]),
+
+                        // Les autres en format horizontal
+                        if (featuredEvents.length > 1)
+                          SizedBox(
+                            height: 260,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              itemCount: featuredEvents.length - 1,
+                              itemBuilder: (context, index) {
+                                return _NormalEventCard(
+                                  event: featuredEvents[index + 1],
+                                );
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                if (featuredEvents.isEmpty)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: AppEmptyState(message: 'Aucun evenement en cours'),
+                    ),
+                  ),
+
+                // ======================== MES EVENEMENTS (2 derniers + fleche voir plus) ========================
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Mes evenements',
+                          style: GoogleFonts.newsreader(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
+                        // Bouton fleche pour voir plus
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const UserEventsHistoryView(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Voir plus',
+                                  style: GoogleFonts.beVietnamPro(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 16,
+                                  color: AppColors.primary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
+
+                if (userEvents.isEmpty)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: AppEmptyState(
+                        message: 'Vous n\'avez pas encore poste d\'evenement',
+                      ),
+                    ),
+                  )
+                else
+                  SliverToBoxAdapter(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: const Color(0xFFE5E2E1)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: List.generate(userEvents.length, (index) {
+                          final event = userEvents[index];
+                          final isLast = index == userEvents.length - 1;
+
+                          return Column(
+                            children: [
+                              _LatestEventItem(event: event),
+                              if (!isLast) const _HorizontalDivider(),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ),
           );
         },
       ),
     );
   }
 }
-
 
 /// Grand cadre en vedette pour le premier evenement du Feed
 class _FeaturedEventCard extends StatelessWidget {
@@ -220,7 +234,8 @@ class _FeaturedEventCard extends StatelessWidget {
           image: DecorationImage(
             image: event.imageUrl != null && event.imageUrl!.isNotEmpty
                 ? NetworkImage(event.imageUrl!)
-                : const AssetImage('assets/images/ambient.png') as ImageProvider,
+                : const AssetImage('assets/images/ambient.png')
+                      as ImageProvider,
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withValues(alpha: 0.3),
@@ -237,7 +252,7 @@ class _FeaturedEventCard extends StatelessWidget {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.72), 
+                  color: Colors.white.withValues(alpha: 0.72),
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
@@ -251,7 +266,11 @@ class _FeaturedEventCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _badge('EN COURS', const Color(0xFFFFEBD6), const Color(0xFF8C4B00)),
+                    _badge(
+                      'EN COURS',
+                      const Color(0xFFFFEBD6),
+                      const Color(0xFF8C4B00),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       event.title,
@@ -265,7 +284,11 @@ class _FeaturedEventCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, color: Color(0xFF8C4B00), size: 18),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          color: Color(0xFF8C4B00),
+                          size: 18,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
@@ -326,7 +349,8 @@ class _NormalEventCard extends StatelessWidget {
           image: DecorationImage(
             image: event.imageUrl != null && event.imageUrl!.isNotEmpty
                 ? NetworkImage(event.imageUrl!)
-                : const AssetImage('assets/images/ambient.png') as ImageProvider,
+                : const AssetImage('assets/images/ambient.png')
+                      as ImageProvider,
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withValues(alpha: 0.4),
@@ -360,7 +384,11 @@ class _NormalEventCard extends StatelessWidget {
               const SizedBox(height: 6),
               Row(
                 children: [
-                  const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                  const Icon(
+                    Icons.location_on,
+                    color: Colors.white70,
+                    size: 14,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -478,7 +506,20 @@ class _LatestEventItem extends StatelessWidget {
   }
 
   String _getMonthAbbreviation(int month) {
-    const months = ['JAN', 'FEV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOU', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const months = [
+      'JAN',
+      'FEV',
+      'MAR',
+      'AVR',
+      'MAI',
+      'JUN',
+      'JUL',
+      'AOU',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
     return months[month - 1];
   }
 }
@@ -495,11 +536,7 @@ class _HorizontalDivider extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color(0x008C4B00),
-            Color(0x4D8C4B00),
-            Color(0x008C4B00),
-          ],
+          colors: [Color(0x008C4B00), Color(0x4D8C4B00), Color(0x008C4B00)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
