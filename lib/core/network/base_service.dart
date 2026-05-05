@@ -39,25 +39,29 @@ abstract class BaseRealtimeService<T> {
   /// Récupère toutes les données de la table et écoute les changements.
   Future<void> subscribe() async {
     // Chargement initial
-    await _fetchAll();
+    await fetchAll();
+
+    // Nom de canal unique pour eviter les conflits
+    final channelName = 'public:$tableName:${DateTime.now().millisecondsSinceEpoch}';
 
     // Écoute des changements en temps réel
     _channel = _client
-        .channel('public:$tableName')
+        .channel(channelName)
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: tableName,
-          callback: (payload) {
-            // Recharge toutes les données à chaque changement
-            _fetchAll();
+          callback: (payload) async {
+            // Petit delai pour laisser le temps a Supabase de propager
+            await Future.delayed(const Duration(milliseconds: 300));
+            fetchAll();
           },
         )
         .subscribe();
   }
 
   /// Récupère toutes les entrées de la table.
-  Future<void> _fetchAll() async {
+  Future<void> fetchAll() async {
     try {
       final response = await _client.from(tableName).select(selectQuery);
       final List<T> items =

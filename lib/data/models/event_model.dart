@@ -29,7 +29,7 @@ class EventModel extends EventEntity {
       description: map['description'] as String? ?? '',
       dateTime: DateTime.parse(map['date_time'] as String),
       location: map['location'] as String? ?? '',
-      organizerId: map['organizer_id'] as String,
+      organizerId: map['organizer_id'] as String? ?? '',
       organizerName: organizerData?['display_name'] as String?,
       organizerAvatarUrl: organizerData?['avatar_url'] as String?,
       imageUrl: map['image_url'] as String?,

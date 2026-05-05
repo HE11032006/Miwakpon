@@ -150,18 +150,18 @@ class LoginView extends StatelessWidget {
           const SizedBox(height: 20),
         ],
 
-        // Champ Telephone
-        _fieldLabel(context, 'Numero de telephone'),
+        // Champ Email
+        _fieldLabel(context, 'Adresse email'),
         const SizedBox(height: 8),
         TextFormField(
-          controller: viewModel.phoneController,
-          keyboardType: TextInputType.phone,
+          controller: viewModel.emailController,
+          keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           enabled: !viewModel.isLoading,
           style: const TextStyle(color: AppColors.textPrimary),
           decoration: _inputDecoration(
-            hint: '+229 XX XX XX XX',
-            icon: Icons.phone_outlined,
+            hint: 'votre@email.com',
+            icon: Icons.email_outlined,
           ),
           onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
@@ -210,37 +210,42 @@ class LoginView extends StatelessWidget {
           ),
         ],
 
-        // Message d'erreur
-        if (viewModel.errorMessage != null) ...[
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.errorContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: AppColors.error,
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    viewModel.errorMessage!,
-                    style: const TextStyle(
-                      color: AppColors.error,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        _errorMessageWidget(viewModel),
       ],
+    );
+  }
+
+  Widget _errorMessageWidget(AuthViewModel viewModel) {
+    if (viewModel.errorMessage == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.errorContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.error,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                viewModel.errorMessage!,
+                style: const TextStyle(
+                  color: AppColors.error,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -273,6 +278,8 @@ class LoginView extends StatelessWidget {
   }
 
   Widget _submitButton(BuildContext context, AuthViewModel viewModel) {
+    final String buttonText = viewModel.isLoginMode ? 'SE CONNECTER' : "S'INSCRIRE";
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: AppColors.shadowGolden,
@@ -291,7 +298,7 @@ class LoginView extends StatelessWidget {
           elevation: 0,
         ),
         child: Text(
-          viewModel.isLoginMode ? 'SE CONNECTER' : "S'INSCRIRE",
+          buttonText,
           style: GoogleFonts.beVietnamPro(
             fontSize: 16,
             fontWeight: FontWeight.w600,

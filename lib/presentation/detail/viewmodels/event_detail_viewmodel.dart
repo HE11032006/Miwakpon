@@ -90,7 +90,20 @@ class EventDetailViewModel extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return 'Erreur lors de l\'inscription : $e';
+      debugPrint('ERREUR TECHNIQUE JOIN: $e');
+      return 'Impossible de rejoindre l\'evenement pour le moment.';
+    }
+  }
+
+  Future<String?> deleteEvent() async {
+    if (_event == null) return 'Evenement introuvable.';
+
+    try {
+      await _supabase.from('events').delete().eq('id', _event!.id);
+      return null;
+    } catch (e) {
+      debugPrint('ERREUR TECHNIQUE DELETE: $e');
+      return 'Impossible de supprimer l\'evenement.';
     }
   }
 

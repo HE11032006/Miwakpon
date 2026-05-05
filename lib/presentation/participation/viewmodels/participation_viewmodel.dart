@@ -41,7 +41,8 @@ class ParticipationViewModel extends ChangeNotifier {
 
       _subscribeToRealtime(eventId);
     } catch (e) {
-      _errorMessage = 'Erreur lors du chargement des participants : $e';
+      debugPrint('ERREUR LOAD PARTICIPANTS: $e');
+      _errorMessage = 'Impossible de charger la liste des participants.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -81,7 +82,8 @@ class ParticipationViewModel extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return 'Erreur lors de l\'inscription : $e';
+      debugPrint('ERREUR JOIN EVENT: $e');
+      return 'Impossible de rejoindre l\'evenement pour le moment.';
     }
   }
 
@@ -99,7 +101,8 @@ class ParticipationViewModel extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
-      return 'Erreur lors de la desinscription : $e';
+      debugPrint('ERREUR LEAVE EVENT: $e');
+      return 'Une erreur est survenue lors de la desinscription.';
     }
   }
 

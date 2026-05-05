@@ -7,6 +7,8 @@ import '../viewmodels/event_detail_viewmodel.dart';
 import '../../participation/viewmodels/participation_viewmodel.dart';
 import '../../participation/views/participation_view.dart';
 import '../../creation/views/create_event_view.dart';
+import '../../../data/models/event_model.dart';
+import '../../profile/viewmodels/profile_viewmodel.dart';
 
 class EventDetailView extends StatefulWidget {
   final String eventId;
@@ -291,7 +293,7 @@ class _EventDetailViewState extends State<EventDetailView> {
                       ),
                       child: PopupMenuButton<String>(
                         icon: const Icon(Icons.more_vert, color: Colors.white),
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'edit') {
                             Navigator.push(
                               context,
@@ -301,6 +303,38 @@ class _EventDetailViewState extends State<EventDetailView> {
                                 ),
                               ),
                             );
+                          } else if (value == 'delete') {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Supprimer l\'evenement'),
+                                content: const Text('Voulez-vous vraiment supprimer cet evenement ? Cette action est irreversible.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('ANNULER'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('SUPPRIMER', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirm == true && context.mounted) {
+                              final error = await viewModel.deleteEvent();
+                              if (error == null && context.mounted) {
+                                Navigator.pop(context); // Retour au feed
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Evenement supprime avec succes')),
+                                );
+                              } else if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(error!)),
+                                );
+                              }
+                            }
                           }
                         },
                         itemBuilder: (context) => [
@@ -314,6 +348,23 @@ class _EventDetailViewState extends State<EventDetailView> {
                                 Text(
                                   'Modifier l\'evenement',
                                   style: GoogleFonts.beVietnamPro(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.delete_outline,
+                                    size: 20, color: Colors.red),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Supprimer l\'evenement',
+                                  style: GoogleFonts.beVietnamPro(
+                                    fontSize: 14,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ],
                             ),
@@ -490,48 +541,58 @@ class _EventDetailViewState extends State<EventDetailView> {
     );
   }
 
-  Widget _hostCard(dynamic event) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: AppColors.surfaceContainerHigh,
-            backgroundImage: event.organizerAvatarUrl != null
-                ? NetworkImage(event.organizerAvatarUrl!)
-                : null,
-            child: event.organizerAvatarUrl == null
-                ? const Icon(Icons.person, color: AppColors.primary)
-                : null,
+  Widget _hostCard(EventModel event) {
+    final currentUserId = SupabaseConfig.currentUser?.id;
+    final isMe = currentUserId == event.organizerId;
+
+    return Consumer<ProfileViewModel>(
+      builder: (context, profileVM, _) {
+        final name = isMe ? profileVM.displayName : (event.organizerName ?? "Utilisateur Miwakpon");
+        final avatar = isMe ? profileVM.avatarUrl : event.organizerAvatarUrl;
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black12),
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(event.organizerName ?? "Utilisateur Miwakpon",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.beVietnamPro(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: AppColors.onSurface,
-                    )),
-                Text("Organisateur de l'evenement",
-                    style: GoogleFonts.beVietnamPro(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    )),
-              ],
-            ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.surfaceContainerHigh,
+                backgroundImage: avatar != null && avatar.isNotEmpty
+                    ? NetworkImage(avatar)
+                    : null,
+                child: avatar == null || avatar.isEmpty
+                    ? const Icon(Icons.person, color: AppColors.primary)
+                    : null,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.beVietnamPro(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                          color: AppColors.onSurface,
+                        )),
+                    Text("Organisateur de l'evenement",
+                        style: GoogleFonts.beVietnamPro(
+                          color: Colors.black54,
+                          fontSize: 13,
+                        )),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

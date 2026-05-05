@@ -27,6 +27,27 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileViewModel() {
     loadProfile();
+    _listenToAuthChanges();
+  }
+
+  void _listenToAuthChanges() {
+    _supabase.auth.onAuthStateChange.listen((data) {
+      final AuthChangeEvent event = data.event;
+      if (event == AuthChangeEvent.signedIn || event == AuthChangeEvent.tokenRefreshed) {
+        loadProfile();
+      } else if (event == AuthChangeEvent.signedOut) {
+        _clearProfile();
+      }
+    });
+  }
+
+  void _clearProfile() {
+    _displayName = '';
+    _username = '';
+    _phone = '';
+    _avatarUrl = null;
+    _email = '';
+    notifyListeners();
   }
 
   Future<void> loadProfile() async {
@@ -69,7 +90,8 @@ class ProfileViewModel extends ChangeNotifier {
         debugPrint('Erreur lecture public.users: $e');
       }
     } catch (e) {
-      _errorMessage = 'Erreur lors du chargement du profil: $e';
+      debugPrint('ERREUR CHARGEMENT PROFIL: $e');
+      _errorMessage = 'Impossible de charger les informations du profil.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -126,7 +148,8 @@ class ProfileViewModel extends ChangeNotifier {
       _displayName = newUsername.trim();
       _successMessage = 'Nom d\'utilisateur mis a jour';
     } catch (e) {
-      _errorMessage = 'Erreur lors de la mise a jour: $e';
+      debugPrint('ERREUR UPDATE USERNAME: $e');
+      _errorMessage = 'Impossible de mettre a jour le nom d\'utilisateur.';
       return false;
     } finally {
       _isLoading = false;
@@ -156,7 +179,8 @@ class ProfileViewModel extends ChangeNotifier {
       _phone = newPhone.trim();
       _successMessage = 'Numero de telephone mis a jour';
     } catch (e) {
-      _errorMessage = 'Erreur lors de la mise a jour: $e';
+      debugPrint('ERREUR UPDATE USERNAME: $e');
+      _errorMessage = 'Impossible de mettre a jour le nom d\'utilisateur.';
       return false;
     } finally {
       _isLoading = false;
@@ -184,7 +208,8 @@ class ProfileViewModel extends ChangeNotifier {
       );
       _successMessage = 'Mot de passe mis a jour';
     } catch (e) {
-      _errorMessage = 'Erreur lors de la mise a jour du mot de passe: $e';
+      debugPrint('ERREUR UPDATE PASSWORD: $e');
+      _errorMessage = 'Impossible de modifier le mot de passe pour le moment.';
       return false;
     } finally {
       _isLoading = false;
@@ -242,7 +267,8 @@ class ProfileViewModel extends ChangeNotifier {
       _avatarUrl = publicUrl;
       _successMessage = 'Photo de profil mise a jour';
     } catch (e) {
-      _errorMessage = 'Erreur lors de l\'upload: $e';
+      debugPrint('ERREUR UPLOAD AVATAR: $e');
+      _errorMessage = 'Echec de la mise a jour de la photo de profil.';
     } finally {
       _isLoading = false;
       notifyListeners();

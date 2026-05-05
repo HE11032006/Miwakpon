@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../profile/viewmodels/profile_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class MainLayout extends StatelessWidget {
   const MainLayout({
@@ -69,23 +71,32 @@ class MainLayout extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
               onTap: () => _goBranch(2), // Profil
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    width: 2,
-                  ),
-                ),
-                child: const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: AppColors.surfaceContainerHigh,
-                  child: Icon(
-                    Icons.person,
-                    size: 20,
-                    color: AppColors.primary,
-                  ),
-                ),
+              child: Consumer<ProfileViewModel>(
+                builder: (context, profileVM, _) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppColors.surfaceContainerHigh,
+                      backgroundImage: profileVM.avatarUrl != null && profileVM.avatarUrl!.isNotEmpty
+                          ? NetworkImage(profileVM.avatarUrl!)
+                          : null,
+                      child: profileVM.avatarUrl == null || profileVM.avatarUrl!.isEmpty
+                          ? const Icon(
+                              Icons.person,
+                              size: 20,
+                              color: AppColors.primary,
+                            )
+                          : null,
+                    ),
+                  );
+                },
               ),
             ),
           ),

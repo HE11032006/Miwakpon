@@ -187,7 +187,7 @@ class _CreateEventViewState extends State<CreateEventView> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.onSurface),
-          onPressed: () => context.go('/home'),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           _isEditing ? 'Modifier' : 'New',
@@ -422,21 +422,7 @@ class _CreateEventViewState extends State<CreateEventView> {
               ),
               const SizedBox(height: 32),
 
-              // Section Ambiance Palette
-              _sectionHeader('Ambiance Palette'),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  _ambianceOption('Terre de Ouidah', AppColors.primary),
-                  _ambianceOption('Bleu Lagune', AppColors.bleuLagune),
-                  _ambianceOption('Jaune Wax', AppColors.jauneSoleil),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Section Capacity
+                           // Section Capacity
               _sectionHeader('Nombre de Participants'),
               const SizedBox(height: 12),
               Container(
@@ -594,52 +580,6 @@ class _CreateEventViewState extends State<CreateEventView> {
       ),
     );
   }
-
-  Widget _ambianceOption(String name, Color color) {
-    final isSelected = _ambiance == name;
-    return GestureDetector(
-      onTap: () => setState(() => _ambiance = name),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(24),
-          border: isSelected ? Border.all(color: AppColors.primary, width: 1.5) : null,
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ] : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              name,
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.onSurface : AppColors.outline,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 
   String _getMonthName(int month) {
     const months = [

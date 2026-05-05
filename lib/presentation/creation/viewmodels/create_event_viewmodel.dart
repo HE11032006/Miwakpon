@@ -186,7 +186,7 @@ class CreateEventViewModel extends ChangeNotifier {
       } else if (e.toString().contains('validation')) {
         _errorMessage = 'Erreur de validation des données';
       } else {
-        _errorMessage = 'Une erreur est survenue: ${e.toString()}';
+        _errorMessage = 'Impossible de creer l\'evenement pour le moment.';
       }
       
       // En développement, afficher l'erreur complète

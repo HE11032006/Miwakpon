@@ -19,7 +19,7 @@ import '../models/event_model.dart';
 class EventService extends BaseRealtimeService<EventModel> {
   EventService() : super(
     tableName: AppConstants.eventsTable,
-    selectQuery: '*, organizer:organizer_id(*)',
+    selectQuery: '*, organizer:users!organizer_id(*)',
   );
 
   @override

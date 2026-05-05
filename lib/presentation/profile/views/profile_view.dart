@@ -481,7 +481,7 @@ class ProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'support@miwakpon.app',
+              'eulogemn@gmail.com',
               style: GoogleFonts.beVietnamPro(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -550,7 +550,7 @@ class ProfileView extends StatelessWidget {
             '- Affichage des evenements\n'
             '- Amelioration de l\'experience utilisateur\n\n'
             'Vos donnees ne sont jamais vendues a des tiers.\n\n'
-            'Pour toute demande de suppression, contactez support@miwakpon.app.',
+            'Pour toute demande de suppression, contactez eulogemn@gmail.com.',
             style: GoogleFonts.beVietnamPro(fontSize: 13, height: 1.6),
           ),
         ),

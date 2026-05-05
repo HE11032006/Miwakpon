@@ -117,8 +117,9 @@ class EventListViewModel extends ChangeNotifier {
         notifyListeners();
       },
       onError: (error) {
+        debugPrint('Erreur temps reel EventList: $error');
         _isLoading = false;
-        _errorMessage = "Erreur temps reel : $error";
+        _errorMessage = "Impossible de mettre a jour la liste.";
         notifyListeners();
       },
     );
@@ -126,7 +127,8 @@ class EventListViewModel extends ChangeNotifier {
     try {
       await _eventService.subscribe();
     } catch (e) {
-      _errorMessage = "Erreur de connexion Supabase : $e";
+      debugPrint('Exception EventList: $e');
+      _errorMessage = "Une erreur est survenue lors du chargement.";
       _isLoading = false;
       notifyListeners();
     }

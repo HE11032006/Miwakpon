@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/network/supabase_config.dart';
 import '../../../data/models/event_model.dart';
 import '../../../data/services/event_service.dart';
@@ -37,21 +38,21 @@ class HomeViewModel extends ChangeNotifier {
     return userSpecific;
   }
 
-  /// 3 evenements aleatoires/melanges en cours (de tout le monde)
+  /// 3 evenements recents ou en cours (de tout le monde)
   List<EventModel> get featuredEvents {
     final now = DateTime.now();
-    // Filtrer les evenements en cours (date future)
-    final activeEvents = _events.where((e) => e.dateTime.isAfter(now)).toList();
+    // On prend les evenements qui ne sont pas termines depuis plus de 24h
+    final today = DateTime(now.year, now.month, now.day);
+    final activeEvents = _events.where((e) => e.dateTime.isAfter(today.subtract(const Duration(days: 1)))).toList();
     
     if (activeEvents.isEmpty) {
-      // Fallback sur tous les events si aucun n'est en cours
       final all = List<EventModel>.from(_events);
-      all.shuffle(Random());
+      all.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return all.take(3).toList();
     }
     
-    // Melanger et prendre 3
-    activeEvents.shuffle(Random());
+    // Trier par date de creation pour voir les nouveaux, puis melanger un peu
+    activeEvents.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return activeEvents.take(3).toList();
   }
 
@@ -60,6 +61,15 @@ class HomeViewModel extends ChangeNotifier {
 
   HomeViewModel() {
     _initRealtimeStream();
+    _listenToAuthChanges();
+  }
+
+  void _listenToAuthChanges() {
+    SupabaseConfig.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedIn) {
+        refresh(); // Recharge les evenements pour le nouvel utilisateur
+      }
+    });
   }
 
   Future<void> _initRealtimeStream() async {
@@ -72,7 +82,8 @@ class HomeViewModel extends ChangeNotifier {
           notifyListeners();
         },
         onError: (error) {
-          _errorMessage = error.toString();
+          debugPrint('Erreur technique HomeViewModel: $error');
+          _errorMessage = 'Impossible de charger les evenements. Veuillez reessayer.';
           _isLoading = false;
           notifyListeners();
         },
@@ -88,13 +99,21 @@ class HomeViewModel extends ChangeNotifier {
         }
       });
     } catch (e) {
-      _errorMessage = e.toString();
+      debugPrint('Exception HomeViewModel: $e');
+      _errorMessage = 'Une erreur est survenue lors de la connexion.';
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  @override
+  /// Rafraichissement manuel
+  Future<void> refresh() async {
+    _isLoading = true;
+    notifyListeners();
+    await _eventService.fetchAll();
+    _isLoading = false;
+    notifyListeners();
+  }
   void dispose() {
     _subscription?.cancel();
     _eventService.dispose();
