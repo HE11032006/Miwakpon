@@ -14,7 +14,7 @@ class ProfileView extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Consumer<ProfileViewModel>(
         builder: (context, profileVM, child) {
-          if (profileVM.isLoading && profileVM.profile == null) {
+          if (profileVM.isLoading && profileVM.displayName.isEmpty) {
             return Center(
               child: SizedBox(
                 width: 100,

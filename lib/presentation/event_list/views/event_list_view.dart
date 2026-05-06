@@ -613,7 +613,7 @@ class _ListSkeletonState extends State<_ListSkeleton> with SingleTickerProviderS
         padding: const EdgeInsets.all(24),
         itemBuilder: (context, index) => Container(
           height: 120,
-          margin: const EdgeInsets.bottom(16),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(16)),
         ),
       ),
