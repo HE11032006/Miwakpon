@@ -46,9 +46,8 @@ class _ParticipationViewState extends State<ParticipationView> {
       ),
       body: Consumer<ParticipationViewModel>(
         builder: (context, vm, _) {
-          if (vm.isLoading) {
-            return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
+          if (vm.isLoading && vm.count == 0) {
+            return const SizedBox.shrink(); // Plus de cercle !
           }
 
           if (vm.errorMessage != null) {

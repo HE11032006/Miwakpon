@@ -602,26 +602,64 @@ class _OfflineView extends StatelessWidget {
   }
 }
 
-class _LoadingView extends StatelessWidget {
+class _LoadingView extends StatefulWidget {
   const _LoadingView();
+
+  @override
+  State<_LoadingView> createState() => _LoadingViewState();
+}
+
+class _LoadingViewState extends State<_LoadingView> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(color: AppColors.primary),
-            const SizedBox(height: 16),
-            Text(
-              'Récupération des événements...',
-              style: GoogleFonts.beVietnamPro(
-                color: AppColors.onSurfaceVariant,
+      body: FadeTransition(
+        opacity: Tween<double>(begin: 0.5, end: 1.0).animate(_controller),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              Container(width: 200, height: 30, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(8))),
+              const SizedBox(height: 8),
+              Container(width: 250, height: 15, decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8))),
+              const SizedBox(height: 32),
+              // Simuler une grande carte
+              Container(
+                width: double.infinity,
+                height: 350,
+                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(25)),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              // Simuler des petites cartes
+              Row(
+                children: [
+                  Container(width: 150, height: 200, decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(20))),
+                  const SizedBox(width: 16),
+                  Container(width: 150, height: 200, decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(20))),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

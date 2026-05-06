@@ -35,9 +35,8 @@ class _EventDetailViewState extends State<EventDetailView> {
       backgroundColor: AppColors.canvasWhite,
       body: Consumer<EventDetailViewModel>(
         builder: (context, viewModel, child) {
-          if (viewModel.isLoading) {
-            return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
+          if (viewModel.isLoading && viewModel.event == null) {
+            return const _DetailSkeleton();
           }
 
           final event = viewModel.event;
@@ -593,6 +592,71 @@ class _EventDetailViewState extends State<EventDetailView> {
           ),
         );
       },
+    );
+  }
+}
+
+class _DetailSkeleton extends StatefulWidget {
+  const _DetailSkeleton();
+
+  @override
+  State<_DetailSkeleton> createState() => _DetailSkeletonState();
+}
+
+class _DetailSkeletonState extends State<_DetailSkeleton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFBF8FF),
+      body: FadeTransition(
+        opacity: Tween<double>(begin: 0.5, end: 1.0).animate(_controller),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 50),
+              Container(
+                height: 400,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(24)),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
+                    Container(width: double.infinity, height: 40, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(8))),
+                    const SizedBox(height: 32),
+                    Container(width: 100, height: 20, decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(4))),
+                    const SizedBox(height: 12),
+                    Container(width: double.infinity, height: 100, decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(8))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
