@@ -197,19 +197,20 @@ class AuthViewModel extends ChangeNotifier {
       SnackBar(
         content: Row(
           children: const [
-            Icon(Icons.check_circle, color: Colors.green, size: 20),
+            Icon(Icons.check_circle_outline, color: Colors.white70, size: 20),
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Compte cree avec succes ! Veuillez verifier vos mails si necessaire.',
-                style: TextStyle(fontSize: 14),
+                'Compte cree avec succes, connectez vous.',
+                style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w500),
               ),
             ),
           ],
         ),
-        backgroundColor: AppColors.success,
+        backgroundColor: const Color(0xFF1D1B20), // Un noir tres sombre (OnSurface)
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
