@@ -18,7 +18,10 @@ class ParticipationViewModel extends ChangeNotifier {
   int get count => _participants.length;
 
   Future<void> loadParticipants(String eventId) async {
-    _isLoading = true;
+    // On ne montre le loader que si on n'a vraiment aucune donnee
+    if (_participants.isEmpty) {
+      _isLoading = true;
+    }
     _errorMessage = null;
     notifyListeners();
 

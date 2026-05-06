@@ -29,8 +29,8 @@ class HomeView extends StatelessWidget {
           final userEvents = viewModel.userEvents;
           final featuredEvents = viewModel.featuredEvents;
 
-          if (viewModel.isOffline) {
-            return _OfflineView(onRetry: viewModel.refresh);
+          if (viewModel.isOffline && viewModel.events.isEmpty) {
+            return const _OfflineView();
           }
 
           if (viewModel.isLoading && viewModel.events.isEmpty) {
@@ -547,6 +547,81 @@ class _HorizontalDivider extends StatelessWidget {
           colors: [Color(0x008C4B00), Color(0x4D8C4B00), Color(0x008C4B00)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
+        ),
+      ),
+    );
+  }
+}
+
+class _OfflineView extends StatelessWidget {
+  const _OfflineView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.wifi_off_rounded, size: 80, color: AppColors.primary),
+              const SizedBox(height: 24),
+              Text(
+                'Mode Hors-Ligne',
+                style: GoogleFonts.newsreader(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Connexion perdue. L\'application tente de se reconnecter automatiquement...',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.beVietnamPro(
+                  fontSize: 16,
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 32),
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingView extends StatelessWidget {
+  const _LoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(color: AppColors.primary),
+            const SizedBox(height: 16),
+            Text(
+              'Récupération des événements...',
+              style: GoogleFonts.beVietnamPro(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );

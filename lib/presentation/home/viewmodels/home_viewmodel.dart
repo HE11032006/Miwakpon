@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/network/supabase_config.dart';
@@ -9,14 +8,12 @@ import '../../../data/services/event_service.dart';
 class HomeViewModel extends ChangeNotifier {
   final EventService _eventService = EventService();
   StreamSubscription<List<EventModel>>? _subscription;
+  Timer? _retryTimer;
 
   List<EventModel> _events = [];
   bool _isLoading = true;
   bool _isOffline = false;
   String? _errorMessage;
-  List<EventModel> _allEvents = [];
-  List<EventModel> _filteredEvents = [];
-  String _searchQuery = '';
 
   bool get isLoading => _isLoading;
   bool get isOffline => _isOffline;
@@ -47,7 +44,6 @@ class HomeViewModel extends ChangeNotifier {
   /// 3 evenements recents ou en cours (de tout le monde)
   List<EventModel> get featuredEvents {
     final now = DateTime.now();
-    // On prend les evenements qui ne sont pas termines depuis plus de 24h
     final today = DateTime(now.year, now.month, now.day);
     final activeEvents = _events.where((e) => e.dateTime.isAfter(today.subtract(const Duration(days: 1)))).toList();
     
@@ -57,7 +53,6 @@ class HomeViewModel extends ChangeNotifier {
       return all.take(3).toList();
     }
     
-    // Trier par date de creation pour voir les nouveaux, puis melanger un peu
     activeEvents.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return activeEvents.take(3).toList();
   }
@@ -73,7 +68,7 @@ class HomeViewModel extends ChangeNotifier {
   void _listenToAuthChanges() {
     SupabaseConfig.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedIn) {
-        refresh(); // Recharge les evenements pour le nouvel utilisateur
+        refresh(); 
       }
     });
   }
@@ -85,14 +80,15 @@ class HomeViewModel extends ChangeNotifier {
           _events = events;
           _isLoading = false;
           _errorMessage = null;
+          _isOffline = false;
           notifyListeners();
         },
         onError: (error) {
           debugPrint('Erreur technique HomeViewModel: $error');
-          // Detection si c'est une erreur de connexion
           if (error.toString().toLowerCase().contains('socketexception') || 
               error.toString().toLowerCase().contains('connection')) {
             _isOffline = true;
+            _startRetryTimer();
           }
           _errorMessage = 'Impossible de charger les evenements.';
           _isLoading = false;
@@ -101,9 +97,8 @@ class HomeViewModel extends ChangeNotifier {
       );
 
       await _eventService.subscribe();
-      _isOffline = false; // Si l'abonnement reussit, on n'est plus offline
+      _isOffline = false;
       
-      // Securite : si apres 5 secondes on est toujours en loading
       Future.delayed(const Duration(seconds: 5), () {
         if (_isLoading) {
           _isLoading = false;
@@ -115,6 +110,7 @@ class HomeViewModel extends ChangeNotifier {
       if (e.toString().toLowerCase().contains('socketexception') || 
           e.toString().toLowerCase().contains('connection')) {
         _isOffline = true;
+        _startRetryTimer();
       }
       _errorMessage = 'Une erreur est survenue lors de la connexion.';
       _isLoading = false;
@@ -122,11 +118,24 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  /// Rafraichissement manuel
+  void _startRetryTimer() {
+    _retryTimer?.cancel();
+    _retryTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_isOffline) {
+        debugPrint('Tentative de reconnexion automatique...');
+        refresh();
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
   Future<void> refresh() async {
-    _isLoading = true;
+    // On ne montre isLoading que si la liste est vide (premier chargement)
+    if (_events.isEmpty) {
+      _isLoading = true;
+    }
     _errorMessage = null;
-    _isOffline = false; // On retente
     notifyListeners();
     
     try {
@@ -136,14 +145,18 @@ class HomeViewModel extends ChangeNotifier {
       if (e.toString().toLowerCase().contains('socketexception') || 
           e.toString().toLowerCase().contains('connection')) {
         _isOffline = true;
+        _startRetryTimer();
       }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
+  @override
   void dispose() {
     _subscription?.cancel();
+    _retryTimer?.cancel();
     _eventService.dispose();
     super.dispose();
   }
