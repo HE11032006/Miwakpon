@@ -121,11 +121,11 @@ class _SplashViewState extends State<SplashView>
               child: Column(
                 children: [
                   SizedBox(
-                    width: 120,
-                    child: LinearProgressIndicator(
-                      minHeight: 2,
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      color: AppColors.primary.withValues(alpha: 0.4),
+                    width: 32,
+                    height: 32,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: AppColors.primary.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 16),
