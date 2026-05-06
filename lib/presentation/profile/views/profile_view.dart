@@ -14,9 +14,16 @@ class ProfileView extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Consumer<ProfileViewModel>(
         builder: (context, profileVM, child) {
-          if (profileVM.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+          if (profileVM.isLoading && profileVM.profile == null) {
+            return Center(
+              child: SizedBox(
+                width: 100,
+                height: 2,
+                child: LinearProgressIndicator(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withValues(alpha: 0.4),
+                ),
+              ),
             );
           }
 

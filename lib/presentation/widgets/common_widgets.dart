@@ -43,10 +43,14 @@ class AppLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: AppColors.primary,
-        strokeWidth: 2,
+    return Center(
+      child: SizedBox(
+        width: 100,
+        height: 2,
+        child: LinearProgressIndicator(
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+          color: AppColors.primary.withValues(alpha: 0.4),
+        ),
       ),
     );
   }

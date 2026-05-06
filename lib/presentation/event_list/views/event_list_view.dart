@@ -158,13 +158,10 @@ class _EventListViewState extends State<EventListView> {
                 ),
 
               // Liste
-              if (viewModel.isLoading)
+              if (viewModel.isLoading && events.isEmpty)
                 const SliverFillRemaining(
                   hasScrollBody: false,
-                  child: Center(
-                    child:
-                        CircularProgressIndicator(color: AppColors.primary),
-                  ),
+                  child: _ListSkeleton(),
                 )
               else if (events.isEmpty)
                 SliverFillRemaining(
@@ -576,6 +573,48 @@ class _EventListViewState extends State<EventListView> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ListSkeleton extends StatefulWidget {
+  const _ListSkeleton();
+
+  @override
+  State<_ListSkeleton> createState() => _ListSkeletonState();
+}
+
+class _ListSkeletonState extends State<_ListSkeleton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0.5, end: 1.0).animate(_controller),
+      child: ListView.builder(
+        itemCount: 5,
+        padding: const EdgeInsets.all(24),
+        itemBuilder: (context, index) => Container(
+          height: 120,
+          margin: const EdgeInsets.bottom(16),
+          decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(16)),
         ),
       ),
     );

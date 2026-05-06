@@ -25,9 +25,11 @@ class EventDetailViewModel extends ChangeNotifier {
       _participantCount >= _event!.maxParticipants;
 
   Future<void> loadEvent(String id) async {
-    if (_event == null) {
-      _isLoading = true;
-    }
+    // Vider l'ancien evenement pour eviter de voir ses infos sur le nouveau
+    _event = null;
+    _participantCount = 0;
+    _participantAvatars = [];
+    _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 

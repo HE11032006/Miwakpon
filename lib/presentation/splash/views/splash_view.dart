@@ -89,14 +89,11 @@ class _SplashViewState extends State<SplashView>
                         shape: BoxShape.circle,
                         boxShadow: AppColors.shadowGolden,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(60),
-                        child: Image.asset(
-                          'assets/icons/sans_fond.jpg',
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
+                      child: Image.asset(
+                        'assets/icons/sans_fond.jpg',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -124,11 +121,11 @@ class _SplashViewState extends State<SplashView>
               child: Column(
                 children: [
                   SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: AppColors.primary.withValues(alpha: 0.6),
+                    width: 120,
+                    child: LinearProgressIndicator(
+                      minHeight: 2,
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                      color: AppColors.primary.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 16),
