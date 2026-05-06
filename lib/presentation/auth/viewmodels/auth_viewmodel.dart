@@ -15,11 +15,19 @@ class AuthViewModel extends ChangeNotifier {
   final confirmPasswordController = TextEditingController();
 
   bool _isLoginMode = true;
+  bool _obscurePassword = true;
 
   bool get isLoading => _isLoading;
+  bool get isOffline => false; // Ajout pour compatibilite si necessaire
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => SupabaseConfig.isAuthenticated;
   bool get isLoginMode => _isLoginMode;
+  bool get obscurePassword => _obscurePassword;
+
+  void toggleObscurePassword() {
+    _obscurePassword = !_obscurePassword;
+    notifyListeners();
+  }
 
   void toggleMode() {
     _isLoginMode = !_isLoginMode;

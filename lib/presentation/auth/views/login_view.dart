@@ -172,7 +172,7 @@ class LoginView extends StatelessWidget {
         const SizedBox(height: 8),
         TextFormField(
           controller: viewModel.passwordController,
-          obscureText: true,
+          obscureText: viewModel.obscurePassword,
           textInputAction: viewModel.isLoginMode
               ? TextInputAction.done
               : TextInputAction.next,
@@ -181,6 +181,16 @@ class LoginView extends StatelessWidget {
           decoration: _inputDecoration(
             hint: 'Minimum 6 caracteres',
             icon: Icons.lock_outline,
+            suffixIcon: IconButton(
+              icon: Icon(
+                viewModel.obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                color: AppColors.textLight,
+                size: 20,
+              ),
+              onPressed: viewModel.toggleObscurePassword,
+            ),
           ),
           onFieldSubmitted: (_) {
             if (viewModel.isLoginMode) {
@@ -198,13 +208,23 @@ class LoginView extends StatelessWidget {
           const SizedBox(height: 8),
           TextFormField(
             controller: viewModel.confirmPasswordController,
-            obscureText: true,
+            obscureText: viewModel.obscurePassword,
             textInputAction: TextInputAction.done,
             enabled: !viewModel.isLoading,
             style: const TextStyle(color: AppColors.textPrimary),
             decoration: _inputDecoration(
               hint: 'Retapez votre mot de passe',
               icon: Icons.lock_outline,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  viewModel.obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: AppColors.textLight,
+                  size: 20,
+                ),
+                onPressed: viewModel.toggleObscurePassword,
+              ),
             ),
             onFieldSubmitted: (_) => viewModel.submitForm(context),
           ),
@@ -263,11 +283,13 @@ class LoginView extends StatelessWidget {
   InputDecoration _inputDecoration({
     required String hint,
     required IconData icon,
+    Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: AppColors.textLight),
       prefixIcon: Icon(icon, color: AppColors.primary),
+      suffixIcon: suffixIcon,
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: AppColors.outline.withValues(alpha: 0.5)),
       ),
