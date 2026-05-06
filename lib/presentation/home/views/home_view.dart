@@ -29,6 +29,14 @@ class HomeView extends StatelessWidget {
           final userEvents = viewModel.userEvents;
           final featuredEvents = viewModel.featuredEvents;
 
+          if (viewModel.isOffline) {
+            return _OfflineView(onRetry: viewModel.refresh);
+          }
+
+          if (viewModel.isLoading && viewModel.events.isEmpty) {
+            return const _LoadingView();
+          }
+
           return Container(
             decoration: const BoxDecoration(
               image: DecorationImage(

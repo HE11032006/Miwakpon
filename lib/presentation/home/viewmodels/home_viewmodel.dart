@@ -12,11 +12,17 @@ class HomeViewModel extends ChangeNotifier {
 
   List<EventModel> _events = [];
   bool _isLoading = true;
+  bool _isOffline = false;
   String? _errorMessage;
+  List<EventModel> _allEvents = [];
+  List<EventModel> _filteredEvents = [];
+  String _searchQuery = '';
+
+  bool get isLoading => _isLoading;
+  bool get isOffline => _isOffline;
+  String? get errorMessage => _errorMessage;
 
   List<EventModel> get events => _events;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
 
   /// Les 2 derniers evenements postes par l'utilisateur actuel
   List<EventModel> get userEvents {
@@ -83,16 +89,22 @@ class HomeViewModel extends ChangeNotifier {
         },
         onError: (error) {
           debugPrint('Erreur technique HomeViewModel: $error');
-          _errorMessage = 'Impossible de charger les evenements. Veuillez reessayer.';
+          // Detection si c'est une erreur de connexion
+          if (error.toString().toLowerCase().contains('socketexception') || 
+              error.toString().toLowerCase().contains('connection')) {
+            _isOffline = true;
+          }
+          _errorMessage = 'Impossible de charger les evenements.';
           _isLoading = false;
           notifyListeners();
         },
       );
 
       await _eventService.subscribe();
+      _isOffline = false; // Si l'abonnement reussit, on n'est plus offline
       
-      // Securite : si apres 3 secondes on est toujours en loading
-      Future.delayed(const Duration(seconds: 3), () {
+      // Securite : si apres 5 secondes on est toujours en loading
+      Future.delayed(const Duration(seconds: 5), () {
         if (_isLoading) {
           _isLoading = false;
           notifyListeners();
@@ -100,6 +112,10 @@ class HomeViewModel extends ChangeNotifier {
       });
     } catch (e) {
       debugPrint('Exception HomeViewModel: $e');
+      if (e.toString().toLowerCase().contains('socketexception') || 
+          e.toString().toLowerCase().contains('connection')) {
+        _isOffline = true;
+      }
       _errorMessage = 'Une erreur est survenue lors de la connexion.';
       _isLoading = false;
       notifyListeners();
@@ -109,10 +125,22 @@ class HomeViewModel extends ChangeNotifier {
   /// Rafraichissement manuel
   Future<void> refresh() async {
     _isLoading = true;
+    _errorMessage = null;
+    _isOffline = false; // On retente
     notifyListeners();
-    await _eventService.fetchAll();
-    _isLoading = false;
-    notifyListeners();
+    
+    try {
+      await _eventService.fetchAll();
+      _isOffline = false;
+    } catch (e) {
+      if (e.toString().toLowerCase().contains('socketexception') || 
+          e.toString().toLowerCase().contains('connection')) {
+        _isOffline = true;
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
   void dispose() {
     _subscription?.cancel();
