@@ -1,6 +1,6 @@
 # Miwakpon
 
-> **Lien de téléchargement** : Retrouvez l'APK de démonstration dans la section [Releases](https://github.com/votre-utilisateur/votre-depot/releases) de ce dépôt.
+> **Lien de téléchargement** : Retrouvez l'APK de démonstration dans la section [Releases](https://github.com/HE11032006/Miwakpon/releases/tag/V1.0) de ce dépôt.
 
 Miwakpon est une application mobile moderne de gestion d'événements, conçue pour offrir une expérience fluide et interactive. Elle permet aux utilisateurs de créer, découvrir et rejoindre des événements en temps réel.
 
